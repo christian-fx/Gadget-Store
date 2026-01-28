@@ -1,0 +1,343 @@
+
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>GadgetStore - Login & Sign Up</title>
+  
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  
+  <!-- Material Symbols -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  
+  <!-- Theme Config -->
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#13b6ec",
+            "background-light": "#f6f8f8",
+            "background-dark": "#101d22",
+            "surface-dark": "#1a2c32",
+          },
+          fontFamily: {
+            "display": ["Inter", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-out',
+            'shake': 'shake 0.5s ease-in-out',
+            'slide-down': 'slideDown 0.3s ease-out',
+            'spin': 'spin 1s linear infinite',
+            'progress': 'progress linear forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '25%': { transform: 'translateX(-5px)' },
+              '75%': { transform: 'translateX(5px)' },
+            },
+            slideDown: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            spin: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            },
+            progress: {
+              '0%': { width: '100%' },
+              '100%': { width: '0%' },
+            }
+          }
+        },
+      },
+    }
+  </script>
+  
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 20px;
+    }
+    
+    /* Smooth transitions */
+    .tab-content {
+      transition: opacity 0.3s ease;
+    }
+    
+    /* Toast notification */
+    .toast-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      min-width: 300px;
+      max-width: 90%;
+    }
+    
+    /* Loading spinner */
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s linear infinite;
+    }
+    
+    .loading-spinner.dark {
+      border: 2px solid rgba(0, 0, 0, 0.3);
+      border-top-color: #111618;
+    }
+    
+    /* Toast progress bar */
+    .toast-progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.5);
+      animation: progress linear forwards;
+    }
+    
+    /* Disabled button state */
+    .btn-disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center justify-center p-4 transition-colors duration-200">
+  
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-notification"></div>
+  
+  <!-- Main Container -->
+  <main class="w-full max-w-[480px] flex flex-col gap-6">
+    
+    <!-- Header / Logo Area -->
+    <div class="flex flex-col items-center text-center gap-2">
+      <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-2">
+        <span class="material-symbols-outlined text-primary text-3xl">devices</span>
+      </div>
+      <h1 class="text-[#111618] dark:text-white text-[32px] font-bold leading-tight tracking-tight">GadgetStore</h1>
+      <p class="text-[#617f89] dark:text-gray-400 text-sm font-normal">Login to continue shopping</p>
+    </div>
+    
+    <!-- Auth Card -->
+    <div class="bg-white dark:bg-surface-dark shadow-xl rounded-xl overflow-hidden w-full border border-gray-100 dark:border-gray-800">
+      
+      <!-- Tabs -->
+      <div class="flex border-b border-[#dbe3e6] dark:border-gray-700">
+        <button id="signInTab" class="flex-1 py-4 text-center border-b-[3px] border-primary text-[#111618] dark:text-white font-bold text-sm tracking-[0.015em] transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          Sign In
+        </button>
+        <button id="signUpTab" class="flex-1 py-4 text-center border-b-[3px] border-transparent text-[#617f89] dark:text-gray-400 font-bold text-sm tracking-[0.015em] transition-colors hover:text-[#111618] dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50">
+          Sign Up
+        </button>
+      </div>
+      
+      <!-- Sign In Form -->
+      <form id="signInForm" class="tab-content p-6 sm:p-8 flex flex-col gap-5">
+        <!-- Email Field -->
+        <div class="flex flex-col gap-2">
+          <label class="text-[#111618] dark:text-white text-base font-medium leading-normal" for="signin-email">Email Address *</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">mail</span>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white dark:bg-[#101d22] placeholder:text-[#617f89] dark:placeholder:text-gray-500 focus:outline-0 focus:ring-1 focus:ring-primary focus:border-primary border border-[#dbe3e6] dark:border-gray-700 h-12 pl-11 pr-4 text-base font-normal leading-normal transition-all" id="signin-email" placeholder="user@gmail.com" type="email" required />
+          </div>
+          <div id="signin-email-error" class="text-red-500 text-sm hidden"></div>
+        </div>
+        
+        <!-- Password Field -->
+        <div class="flex flex-col gap-2">
+          <label class="text-[#111618] dark:text-white text-base font-medium leading-normal" for="signin-password">Password *</label>
+          <div class="relative flex w-full rounded-lg">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">lock</span>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white dark:bg-[#101d22] placeholder:text-[#617f89] dark:placeholder:text-gray-500 focus:outline-0 focus:ring-1 focus:ring-primary focus:border-primary border border-[#dbe3e6] dark:border-gray-700 h-12 pl-11 pr-12 text-base font-normal leading-normal transition-all" id="signin-password" placeholder="••••••••" type="password" required />
+            <button type="button" class="toggle-password absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center text-[#617f89] hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-[20px]">visibility</span>
+            </button>
+          </div>
+          <div id="signin-password-error" class="text-red-500 text-sm hidden"></div>
+        </div>
+        
+        <!-- Admin Key Field (Hidden by default, shown only for admin login) -->
+        <div id="admin-key-container" class="flex flex-col gap-2 hidden">
+          <label class="text-[#111618] dark:text-white text-base font-medium leading-normal flex items-center gap-2" for="admin-key">
+            Admin Key
+            <span class="text-[#617f89] dark:text-gray-500 text-sm font-normal">(Required for admin access)</span>
+          </label>
+          
+          <div class="relative group">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px] pointer-events-none z-10 transition-colors group-focus-within:text-primary">
+              vpn_key
+            </span>
+            
+            <input class="form-input flex w-full min-w-0 rounded-lg text-[#111618] dark:text-white dark:bg-[#101d22] placeholder:text-[#617f89] dark:placeholder:text-gray-500 focus:outline-0 focus:ring-1 focus:ring-primary focus:border-primary border border-[#dbe3e6] dark:border-gray-700 h-12 pl-11 pr-12 text-base font-normal transition-all" id="admin-key" placeholder="Enter admin key" type="password" />
+            
+            <button type="button" class="toggle-password absolute right-0 top-0 bottom-0 px-4 flex items-center justify-center text-[#617f89] hover:text-primary transition-colors z-10">
+              <span class="material-symbols-outlined text-[20px]">visibility</span>
+            </button>
+          </div>
+          <div id="admin-key-error" class="text-red-500 text-sm hidden"></div>
+        </div>
+        
+        <!-- Actions Row -->
+        <div class="flex items-center justify-between mt-1">
+          <label class="inline-flex items-center cursor-pointer group">
+            <input class="form-checkbox h-4 w-4 text-primary border-[#dbe3e6] dark:border-gray-600 rounded focus:ring-primary dark:bg-[#101d22]" type="checkbox" id="remember-me" />
+            <span class="ml-2 text-sm text-[#111618] dark:text-gray-300 group-hover:text-primary transition-colors">Keep me logged in</span>
+          </label>
+          <a class="text-sm font-bold text-primary hover:text-[#13b6ec]/80 transition-colors" href="#" id="forgot-password">Forgot Password?</a>
+        </div>
+        
+        <!-- Submit Button -->
+        <button id="signInButton" class="w-full h-12 bg-primary hover:bg-[#11a3d4] text-white text-base font-bold leading-normal rounded-lg shadow-sm hover:shadow-md transition-all duration-200 mt-2 flex items-center justify-center gap-2" type="submit">
+          <span id="signInText">Sign In</span>
+          <span id="signInIcon" class="material-symbols-outlined text-[20px]">login</span>
+          <div id="signInSpinner" class="loading-spinner hidden"></div>
+        </button>
+        
+        <!-- Footer Text -->
+        <p class="text-slate-500 dark:text-slate-400 text-sm text-center mt-2">
+          Don't have an account?
+          <button type="button" class="text-primary font-bold hover:underline switch-to-signup">Sign Up</button>
+        </p>
+      </form>
+      
+      <!-- Sign Up Form -->
+      <form id="signUpForm" class="tab-content p-6 sm:p-8 flex flex-col gap-5 hidden">
+        <!-- Name Row -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <label class="flex flex-col flex-1">
+            <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">First Name *</p>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-sm font-normal leading-normal transition-all" placeholder="Enter first name" type="text" id="first-name" required />
+            <div id="first-name-error" class="text-red-500 text-sm hidden"></div>
+          </label>
+          <label class="flex flex-col flex-1">
+            <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">Last Name *</p>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-sm font-normal leading-normal transition-all" placeholder="Enter last name" type="text" id="last-name" required />
+            <div id="last-name-error" class="text-red-500 text-sm hidden"></div>
+          </label>
+        </div>
+        
+        <!-- Email -->
+        <label class="flex flex-col w-full">
+          <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">Email Address *</p>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">mail</span>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-11 pr-4 text-sm font-normal leading-normal transition-all" placeholder="customer@gadgetstore.com" type="email" id="signup-email" required />
+          </div>
+          <div id="signup-email-error" class="text-red-500 text-sm hidden"></div>
+        </label>
+        
+        <!-- Phone -->
+        <label class="flex flex-col w-full">
+          <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">Phone Number</p>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">phone</span>
+            <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-11 pr-4 text-sm font-normal leading-normal transition-all" placeholder="+1 (555) 000-0000" type="tel" id="phone" />
+            <div id="phone-error" class="text-red-500 text-sm hidden"></div>
+          </div>
+        </label>
+        
+        <!-- Password Row -->
+        <div class="flex flex-col md:flex-row gap-4">
+          <label class="flex flex-col flex-1">
+            <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">Password *</p>
+            <div class="relative w-full">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">lock</span>
+              <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-11 pr-10 text-sm font-normal leading-normal transition-all" placeholder="Create password (min. 6 chars)" type="password" id="signup-password" required />
+              <button type="button" class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">visibility</span>
+              </button>
+            </div>
+            <div id="signup-password-error" class="text-red-500 text-sm hidden"></div>
+          </label>
+          <label class="flex flex-col flex-1">
+            <p class="text-[#111618] dark:text-slate-200 text-sm font-medium leading-normal pb-2">Confirm Password *</p>
+            <div class="relative w-full">
+              <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">lock</span>
+              <input class="form-input flex w-full min-w-0 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-1 focus:ring-primary border border-[#dbe3e6] dark:border-[#3e4f55] bg-white dark:bg-[#1a2c32] focus:border-primary h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 pl-11 pr-10 text-sm font-normal leading-normal transition-all" placeholder="Confirm password" type="password" id="confirm-password" required />
+              <button type="button" class="toggle-password absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">visibility</span>
+              </button>
+            </div>
+            <div id="confirm-password-error" class="text-red-500 text-sm hidden"></div>
+          </label>
+        </div>
+        
+        <!-- Terms Checkbox -->
+        <div class="flex items-start gap-3 mt-1">
+          <div class="flex items-center h-5">
+            <input class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-[#3e4f55] dark:bg-[#1a2c32]" id="terms" type="checkbox" required />
+          </div>
+          <label class="text-sm text-slate-600 dark:text-slate-300 leading-tight" for="terms">
+            I agree to the <a class="text-primary font-medium hover:underline" href="#">Terms of Service</a> and <a class="text-primary font-medium hover:underline" href="#">Privacy Policy</a>.
+          </label>
+        </div>
+        <div id="terms-error" class="text-red-500 text-sm hidden"></div>
+        
+        <!-- Submit Button -->
+        <button id="signUpButton" class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-sky-400 text-white text-base font-bold leading-normal tracking-[0.015em] transition-colors mt-2" type="submit">
+          <span id="signUpText" class="truncate">Create Account</span>
+          <div id="signUpSpinner" class="loading-spinner hidden ml-2"></div>
+        </button>
+        
+        <!-- Footer Text -->
+        <p class="text-slate-500 dark:text-slate-400 text-sm text-center mt-2">
+          Already have an account?
+          <button type="button" class="text-primary font-bold hover:underline switch-to-signin">Sign In</button>
+        </p>
+      </form>
+      
+    </div> <!-- End Auth Card -->
+    
+    <!-- Footer Info -->
+    <p class="text-center text-xs text-[#617f89] dark:text-gray-500 mt-4">
+      © 2024 GadgetStore Inc. All rights reserved.
+    </p>
+    
+  </main>
+  
+  <!-- Auth JavaScript -->
+  <script src="/src/js/auth.js"></script>
+</body>
+
+</html>

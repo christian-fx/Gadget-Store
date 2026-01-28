@@ -1,0 +1,14 @@
+node_modules/
+.env
+dist/
+build/
+.DS_Store
+
+# Firebase configuration and sensitive data
+src/js/firebase/
+firebase.config.js
+.firebase/
+.firebaserc
+
+# Services folder
+src/js/services.js/

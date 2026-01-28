@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Gadget Admin - Settings</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <!-- Tailwind Config -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b8cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                        "sidebar-dark": "#111827",
+                        "sidebar-hover": "#1f2937",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    animation: {
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'spin': 'spin 1s linear infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { 
+                                opacity: '0',
+                                transform: 'translateY(20px) scale(0.95)'
+                            },
+                            '100%': { 
+                                opacity: '1',
+                                transform: 'translateY(0) scale(1)'
+                            },
+                        },
+                        spin: {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <!-- External Auth and Admin Guard Scripts -->
+    <script src="/src/js/auth-guard.js"></script>
+    <script src="/src/js/admin/adminGuard.js"></script>
+    
+    <style>
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Smooth sidebar transition */
+        .sidebar-transition {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        /* Overlay for mobile sidebar */
+        .sidebar-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: opacity 0.3s ease;
+        }
+        
+        /* Modal overlay */
+        .modal-overlay {
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+        }
+        
+        /* Theme toggle switch */
+        .theme-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .theme-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .theme-toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .theme-toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .theme-toggle-slider {
+            background-color: #2b8cee;
+        }
+        
+        input:checked + .theme-toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        /* Settings submenu styles */
+        .settings-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .settings-submenu.open {
+            max-height: 500px;
+        }
+        
+        .settings-submenu-item {
+            padding-left: 2.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .settings-submenu-item.active {
+            background-color: rgba(43, 140, 238, 0.1);
+            color: #2b8cee;
+        }
+    </style>
+</head>
+<body class="font-display text-slate-900 bg-background-light dark:bg-background-dark overflow-hidden">
+    <div class="flex h-screen w-full overflow-hidden">
+        <!-- Mobile Overlay (for sidebar) -->
+        <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 z-30 hidden opacity-0 lg:hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed lg:relative w-64 flex-shrink-0 flex flex-col bg-sidebar-dark border-r border-slate-800 text-slate-300 transition-all duration-300 sidebar-transition h-full z-40 -translate-x-full lg:translate-x-0">
+            <!-- Brand with close button for mobile -->
+            <div class="h-16 flex items-center justify-between px-6 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-white">
+                        <span class="material-symbols-outlined text-[20px]">devices</span>
+                    </div>
+                    <div>
+                        <h1 class="text-white text-base font-bold leading-none">Gadget Admin</h1>
+                        <p class="text-slate-500 text-xs mt-1">v2.4.0</p>
+                    </div>
+                </div>
+                <!-- Close button for mobile sidebar -->
+                <button id="closeSidebar" class="lg:hidden text-slate-400 hover:text-white p-1">
+                    <span class="material-symbols-outlined text-[24px]">close</span>
+                </button>
+            </div>
+            
+            <!-- Navigation -->
+            <nav class="flex-1 overflow-y-auto py-6 px-3 flex flex-col gap-1">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="dashboard.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">dashboard</span>
+                    <span class="text-sm font-medium">Dashboard</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="product.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">shopping_bag</span>
+                    <span class="text-sm font-medium">Products</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="orders.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">shopping_cart</span>
+                    <span class="text-sm font-medium">Orders</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="customer.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">group</span>
+                    <span class="text-sm font-medium">Customers</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="categories.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">category</span>
+                    <span class="text-sm font-medium">Categories</span>
+                </a>
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group" href="inventory.html">
+                    <span class="material-symbols-outlined text-[22px] group-hover:text-white">inventory_2</span>
+                    <span class="text-sm font-medium">Inventory</span>
+                </a>
+                <div class="my-2 border-t border-slate-800"></div>
+                
+                <!-- Settings Main Menu Item -->
+                <div class="settings-menu">
+                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white shadow-lg shadow-primary/20 cursor-pointer settings-main-item">
+                        <span class="material-symbols-outlined text-[22px] fill-1">settings</span>
+                        <span class="text-sm font-medium flex-1">Settings</span>
+                        <span class="material-symbols-outlined text-[18px] settings-chevron transition-transform">chevron_right</span>
+                    </div>
+                    
+                    <!-- Settings Submenu -->
+                    <div class="settings-submenu mt-1 ml-3">
+                        <a data-tab="general" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">tune</span>
+                            <span class="text-sm font-medium">General</span>
+                        </a>
+                        <a data-tab="store" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">store</span>
+                            <span class="text-sm font-medium">Store</span>
+                        </a>
+                        <a data-tab="shipping" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">local_shipping</span>
+                            <span class="text-sm font-medium">Shipping</span>
+                        </a>
+                        <a data-tab="payment" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">payments</span>
+                            <span class="text-sm font-medium">Payment</span>
+                        </a>
+                        <a data-tab="notifications" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">notifications</span>
+                            <span class="text-sm font-medium">Notifications</span>
+                        </a>
+                        <a data-tab="security" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">shield</span>
+                            <span class="text-sm font-medium">Security</span>
+                        </a>
+                        <a data-tab="advanced" class="settings-submenu-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-sidebar-hover transition-colors group">
+                            <span class="material-symbols-outlined text-[18px] group-hover:text-white">build</span>
+                            <span class="text-sm font-medium">Advanced</span>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="p-3 border-t border-slate-800">
+                <a id="logoutBtn" class="logout-btn flex items-center gap-3 px-3 py-2.5 rounded-lg text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-[22px]">logout</span>
+                    <span class="text-sm font-medium">Logout</span>
+                </a>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col min-w-0 bg-[#f3f4f6] overflow-hidden">
+            <!-- Page Header with Hamburger Button -->
+            <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-6">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <!-- Hamburger Menu Button -->
+                        <button id="openSidebar" class="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                            <span class="material-symbols-outlined">menu</span>
+                        </button>
+                        <div>
+                            <h2 id="pageTitle" class="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">General Settings</h2>
+                            <p id="pageDescription" class="text-slate-500 text-sm mt-1">Configure your store preferences</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button class="hidden md:flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button id="saveSettings" class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white text-sm font-semibold py-2.5 px-5 rounded-lg shadow-sm shadow-blue-500/30 transition-all">
+                            <span class="material-symbols-outlined text-[20px]">save</span>
+                            <span>Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 md:p-8">
+                <div class="max-w-7xl mx-auto">
+                    <!-- General Settings -->
+                    <div id="general-tab" class="settings-content active-tab-content">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 space-y-8">
+                                <!-- Store Information -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Store Information</h3>
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Store Name *</label>
+                                            <input id="storeName" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="Gadget Store" type="text" value="Gadget Admin"/>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Store Email *</label>
+                                            <input id="storeEmail" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="contact@store.com" type="email" value="admin@gadgetstore.com"/>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Store Phone</label>
+                                            <input id="storePhone" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="(123) 456-7890" type="tel" value="(555) 123-4567"/>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Store Address</label>
+                                            <textarea id="storeAddress" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 resize-none" rows="3" placeholder="Enter store address">123 Tech Street, Silicon Valley, CA 94000</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Timezone & Currency -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Regional Settings</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Timezone *</label>
+                                            <select id="timezone" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="America/New_York" selected>Eastern Time (ET)</option>
+                                                <option value="America/Chicago">Central Time (CT)</option>
+                                                <option value="America/Denver">Mountain Time (MT)</option>
+                                                <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                                                <option value="America/Anchorage">Alaska Time (AKT)</option>
+                                                <option value="Pacific/Honolulu">Hawaii Time (HT)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Currency *</label>
+                                            <select id="currency" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="USD" selected>US Dollar ($)</option>
+                                                <option value="EUR">Euro (€)</option>
+                                                <option value="GBP">British Pound (£)</option>
+                                                <option value="CAD">Canadian Dollar (C$)</option>
+                                                <option value="AUD">Australian Dollar (A$)</option>
+                                                <option value="JPY">Japanese Yen (¥)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Date Format *</label>
+                                            <select id="dateFormat" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                                                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                                                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Time Format *</label>
+                                            <select id="timeFormat" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="12h" selected>12-hour (AM/PM)</option>
+                                                <option value="24h">24-hour</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Display Settings -->
+                            <div class="space-y-8">
+                                <!-- Theme Settings -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Theme</h3>
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-3">Dark Mode</label>
+                                            <label class="theme-toggle">
+                                                <input id="darkModeToggle" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                            <p class="text-xs text-slate-500 mt-2">Toggle between light and dark theme</p>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-3">Primary Color</label>
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-10 h-10 rounded-lg bg-primary cursor-pointer border-2 border-slate-200"></div>
+                                                <div class="w-10 h-10 rounded-lg bg-emerald-500 cursor-pointer border-2 border-slate-200"></div>
+                                                <div class="w-10 h-10 rounded-lg bg-purple-500 cursor-pointer border-2 border-slate-200"></div>
+                                                <div class="w-10 h-10 rounded-lg bg-amber-500 cursor-pointer border-2 border-slate-200"></div>
+                                                <div class="w-10 h-10 rounded-lg bg-rose-500 cursor-pointer border-2 border-slate-200"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Sidebar Style</label>
+                                            <select id="sidebarStyle" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="expanded" selected>Expanded</option>
+                                                <option value="collapsed">Collapsed</option>
+                                                <option value="floating">Floating</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Store Logo -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Store Logo</h3>
+                                    <div class="space-y-4">
+                                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-50 hover:border-primary/50 transition-all cursor-pointer">
+                                            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                                                <span class="material-symbols-outlined text-3xl text-slate-400">image</span>
+                                            </div>
+                                            <p class="text-sm font-medium text-slate-900">Click to upload logo</p>
+                                            <p class="text-xs text-slate-500 mt-1">Recommended: 200×200px, PNG or SVG</p>
+                                        </div>
+                                        <div class="text-center">
+                                            <p class="text-xs text-slate-500">Current Logo</p>
+                                            <div class="mt-2 w-20 h-20 mx-auto bg-primary rounded-lg flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-white text-2xl">devices</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Store Settings -->
+                    <div id="store-tab" class="settings-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 space-y-8">
+                                <!-- Product Settings -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Product Settings</h3>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Low Stock Threshold</label>
+                                                <p class="text-xs text-slate-500">Alert when stock is below this level</p>
+                                            </div>
+                                            <input id="lowStockThreshold" class="w-24 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 text-right" type="number" min="1" value="10"/>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Show Out of Stock Products</label>
+                                                <p class="text-xs text-slate-500">Display products with zero stock</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="showOutOfStock" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Enable Product Reviews</label>
+                                                <p class="text-xs text-slate-500">Allow customers to review products</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="enableReviews" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Require Approval for Reviews</label>
+                                                <p class="text-xs text-slate-500">Manually approve reviews before publishing</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="approveReviews" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Inventory Settings -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Inventory Settings</h3>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Track Inventory</label>
+                                                <p class="text-xs text-slate-500">Automatically update stock levels</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="trackInventory" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Allow Backorders</label>
+                                                <p class="text-xs text-slate-500">Allow orders when out of stock</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="allowBackorders" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Hold Stock (minutes)</label>
+                                                <p class="text-xs text-slate-500">How long to hold stock during checkout</p>
+                                            </div>
+                                            <input id="holdStock" class="w-24 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 text-right" type="number" min="1" value="30"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Maintenance Mode -->
+                            <div class="space-y-8">
+                                <!-- Maintenance Settings -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Maintenance</h3>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Maintenance Mode</label>
+                                                <p class="text-xs text-slate-500">Temporarily disable the store</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="maintenanceMode" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Maintenance Message</label>
+                                            <textarea id="maintenanceMessage" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 resize-none" rows="4" placeholder="Store is under maintenance...">We're currently performing maintenance. We'll be back soon!</textarea>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Admin Email Notifications</label>
+                                            <input id="adminEmail" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="admin@store.com" type="email" value="admin@gadgetstore.com"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Data Export -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Data Management</h3>
+                                    <div class="space-y-3">
+                                        <button id="exportData" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <span class="material-symbols-outlined">download</span>
+                                            Export Store Data
+                                        </button>
+                                        <button id="backupData" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <span class="material-symbols-outlined">backup</span>
+                                            Create Backup
+                                        </button>
+                                        <button id="clearCache" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-rose-200 text-rose-700 hover:bg-rose-50 transition-colors">
+                                            <span class="material-symbols-outlined">delete</span>
+                                            Clear Cache
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Settings -->
+                    <div id="shipping-tab" class="settings-content hidden">
+                        <div class="space-y-8">
+                            <!-- Shipping Zones -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Shipping Zones</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">United States</h4>
+                                            <p class="text-sm text-slate-500">Flat rate shipping</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-medium text-slate-900">$9.99</span>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">edit</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">Canada</h4>
+                                            <p class="text-sm text-slate-500">Free shipping over $100</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-medium text-slate-900">$14.99</span>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">edit</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">International</h4>
+                                            <p class="text-sm text-slate-500">Calculated shipping</p>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-sm font-medium text-slate-900">$24.99+</span>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">edit</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="mt-4 flex items-center gap-2 text-primary hover:text-blue-600">
+                                    <span class="material-symbols-outlined">add</span>
+                                    <span class="text-sm font-medium">Add Shipping Zone</span>
+                                </button>
+                            </div>
+                            
+                            <!-- Shipping Options -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Shipping Options</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Enable Free Shipping</label>
+                                                <p class="text-xs text-slate-500">Offer free shipping for orders over amount</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="enableFreeShipping" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Free Shipping Minimum</label>
+                                            <div class="relative">
+                                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                                                    <span class="text-sm font-semibold">$</span>
+                                                </div>
+                                                <input id="freeShippingMin" class="block w-full pl-7 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="number" min="0" value="50"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Enable Local Pickup</label>
+                                                <p class="text-xs text-slate-500">Allow customers to pick up orders</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="enableLocalPickup" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Local Pickup Address</label>
+                                            <input id="pickupAddress" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="Store address for pickup" type="text"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Settings -->
+                    <div id="payment-tab" class="settings-content hidden">
+                        <div class="space-y-8">
+                            <!-- Payment Methods -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Payment Methods</h3>
+                                <div class="space-y-4">
+                                    <!-- Stripe -->
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-white">credit_card</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-slate-900">Stripe</h4>
+                                                <p class="text-sm text-slate-500">Credit card payments</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <label class="theme-toggle">
+                                                <input id="stripeEnabled" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">settings</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- PayPal -->
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-white">payments</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-slate-900">PayPal</h4>
+                                                <p class="text-sm text-slate-500">Online payments</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <label class="theme-toggle">
+                                                <input id="paypalEnabled" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">settings</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Apple Pay -->
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-black flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-white">smartphone</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-slate-900">Apple Pay</h4>
+                                                <p class="text-sm text-slate-500">Mobile payments</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <label class="theme-toggle">
+                                                <input id="applePayEnabled" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">settings</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Cash on Delivery -->
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center">
+                                                <span class="material-symbols-outlined text-white">local_atm</span>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-medium text-slate-900">Cash on Delivery</h4>
+                                                <p class="text-sm text-slate-500">Pay when order arrives</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <label class="theme-toggle">
+                                                <input id="codEnabled" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                            <button class="text-slate-400 hover:text-primary p-1">
+                                                <span class="material-symbols-outlined">settings</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Settings -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Payment Settings</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Test Mode</label>
+                                                <p class="text-xs text-slate-500">Enable for testing payments</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="testMode" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Capture Payment Immediately</label>
+                                                <p class="text-xs text-slate-500">Capture payment when order is placed</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="capturePayment" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Default Currency</label>
+                                            <select id="defaultCurrency" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="USD" selected>US Dollar (USD)</option>
+                                                <option value="EUR">Euro (EUR)</option>
+                                                <option value="GBP">British Pound (GBP)</option>
+                                                <option value="CAD">Canadian Dollar (CAD)</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Tax Rate (%)</label>
+                                            <input id="taxRate" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="number" min="0" max="100" step="0.1" value="8.5"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications Settings -->
+                    <div id="notifications-tab" class="settings-content hidden">
+                        <div class="space-y-8">
+                            <!-- Email Notifications -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Email Notifications</h3>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">New Order Notifications</h4>
+                                            <p class="text-sm text-slate-500">Send email when new order is placed</p>
+                                        </div>
+                                        <label class="theme-toggle">
+                                            <input id="newOrderEmail" type="checkbox" checked>
+                                            <span class="theme-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">Order Status Updates</h4>
+                                            <p class="text-sm text-slate-500">Notify customers about order status</p>
+                                        </div>
+                                        <label class="theme-toggle">
+                                            <input id="statusUpdateEmail" type="checkbox" checked>
+                                            <span class="theme-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">Low Stock Alerts</h4>
+                                            <p class="text-sm text-slate-500">Alert when product stock is low</p>
+                                        </div>
+                                        <label class="theme-toggle">
+                                            <input id="lowStockEmail" type="checkbox" checked>
+                                            <span class="theme-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="flex items-center justify-between p-4 rounded-lg border border-slate-200 bg-slate-50">
+                                        <div>
+                                            <h4 class="font-medium text-slate-900">New Customer Welcome</h4>
+                                            <p class="text-sm text-slate-500">Send welcome email to new customers</p>
+                                        </div>
+                                        <label class="theme-toggle">
+                                            <input id="welcomeEmail" type="checkbox" checked>
+                                            <span class="theme-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Notification Settings -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Notification Settings</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">From Email Address</label>
+                                            <input id="fromEmail" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="email" value="noreply@gadgetstore.com"/>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">From Name</label>
+                                            <input id="fromName" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="text" value="Gadget Store"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Admin Email</label>
+                                            <input id="adminNotificationEmail" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="email" value="admin@gadgetstore.com"/>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Test Email Address</label>
+                                            <div class="flex gap-2">
+                                                <input id="testEmail" class="flex-1 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" placeholder="test@example.com" type="email"/>
+                                                <button id="sendTestEmail" class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+                                                    Send Test
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Security Settings -->
+                    <div id="security-tab" class="settings-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            <div class="lg:col-span-2 space-y-8">
+                                <!-- Password Security -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Password Security</h3>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Require Strong Passwords</label>
+                                                <p class="text-xs text-slate-500">Enforce password complexity</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="strongPasswords" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Password Expiration</label>
+                                                <p class="text-xs text-slate-500">Require password change every</p>
+                                            </div>
+                                            <select id="passwordExpiration" class="w-40 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="0">Never</option>
+                                                <option value="30">30 days</option>
+                                                <option value="60">60 days</option>
+                                                <option value="90" selected>90 days</option>
+                                                <option value="180">180 days</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Failed Login Lockout</label>
+                                                <p class="text-xs text-slate-500">Lock account after failed attempts</p>
+                                            </div>
+                                            <input id="failedLoginLockout" class="w-24 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 text-right" type="number" min="1" value="5"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Session Security -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Session Security</h3>
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Session Timeout (minutes)</label>
+                                                <p class="text-xs text-slate-500">Auto-logout after inactivity</p>
+                                            </div>
+                                            <input id="sessionTimeout" class="w-24 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3 text-right" type="number" min="1" value="30"/>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Force HTTPS</label>
+                                                <p class="text-xs text-slate-500">Redirect all traffic to HTTPS</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="forceHttps" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Two-Factor Authentication</label>
+                                                <p class="text-xs text-slate-500">Require 2FA for admin access</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="twoFactorAuth" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Security Actions -->
+                            <div class="space-y-8">
+                                <!-- Security Logs -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Security Logs</h3>
+                                    <div class="space-y-3">
+                                        <button id="viewLogs" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <span class="material-symbols-outlined">list_alt</span>
+                                            View Security Logs
+                                        </button>
+                                        <button id="exportLogs" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <span class="material-symbols-outlined">download</span>
+                                            Export Security Logs
+                                        </button>
+                                        <button id="clearLogs" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors">
+                                            <span class="material-symbols-outlined">delete</span>
+                                            Clear Logs (30+ days)
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Change Password -->
+                                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                    <h3 class="text-lg font-semibold text-slate-900 mb-6">Change Password</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Current Password</label>
+                                            <input id="currentPassword" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="password"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">New Password</label>
+                                            <input id="newPassword" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="password"/>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Confirm New Password</label>
+                                            <input id="confirmPassword" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="password"/>
+                                        </div>
+                                        <button id="changePassword" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary text-white hover:bg-blue-600 transition-colors">
+                                            <span class="material-symbols-outlined">lock</span>
+                                            Update Password
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Settings -->
+                    <div id="advanced-tab" class="settings-content hidden">
+                        <div class="space-y-8">
+                            <!-- API Settings -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">API Settings</h3>
+                                <div class="space-y-5">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700">Enable REST API</label>
+                                            <p class="text-xs text-slate-500">Allow external applications to access data</p>
+                                        </div>
+                                        <label class="theme-toggle">
+                                            <input id="enableApi" type="checkbox">
+                                            <span class="theme-toggle-slider"></span>
+                                        </label>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1.5">API Key</label>
+                                        <div class="flex gap-2">
+                                            <input id="apiKey" class="flex-1 rounded-lg border-slate-200 bg-slate-50 text-slate-500 sm:text-sm py-2.5 px-3" type="text" value="sk_live_**********" readonly/>
+                                            <button id="copyApiKey" class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+                                                Copy
+                                            </button>
+                                            <button id="regenerateApiKey" class="px-4 py-2.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">
+                                                Regenerate
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-slate-700 mb-1.5">API Rate Limit</label>
+                                        <div class="flex items-center gap-2">
+                                            <input id="apiRateLimit" class="w-32 rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3" type="number" min="1" value="100"/>
+                                            <span class="text-slate-600">requests per minute</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Advanced Options -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Advanced Options</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div class="space-y-5">
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Enable Debug Mode</label>
+                                                <p class="text-xs text-slate-500">Show detailed error messages</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="debugMode" type="checkbox">
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="flex items-center justify-between">
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Enable Caching</label>
+                                                <p class="text-xs text-slate-500">Cache pages for better performance</p>
+                                            </div>
+                                            <label class="theme-toggle">
+                                                <input id="enableCaching" type="checkbox" checked>
+                                                <span class="theme-toggle-slider"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="space-y-5">
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Cache Duration</label>
+                                            <select id="cacheDuration" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="3600">1 hour</option>
+                                                <option value="86400" selected>1 day</option>
+                                                <option value="604800">1 week</option>
+                                                <option value="2592000">1 month</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-slate-700 mb-1.5">Log Level</label>
+                                            <select id="logLevel" class="block w-full rounded-lg border-slate-200 bg-slate-50 focus:bg-white focus:border-primary focus:ring-primary sm:text-sm py-2.5 px-3">
+                                                <option value="error">Error Only</option>
+                                                <option value="warning" selected>Warning</option>
+                                                <option value="info">Info</option>
+                                                <option value="debug">Debug</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dangerous Zone -->
+                            <div class="bg-white rounded-xl border border-rose-200 shadow-sm p-6">
+                                <h3 class="text-lg font-semibold text-rose-900 mb-6">Dangerous Zone</h3>
+                                <div class="space-y-4">
+                                    <p class="text-sm text-slate-600">These actions are irreversible. Please proceed with caution.</p>
+                                    <div class="space-y-3">
+                                        <button id="resetSettings" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-amber-200 text-amber-700 hover:bg-amber-50 transition-colors">
+                                            <span class="material-symbols-outlined">restart_alt</span>
+                                            Reset to Default Settings
+                                        </button>
+                                        <button id="deleteAllData" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border border-rose-200 text-rose-700 hover:bg-rose-50 transition-colors">
+                                            <span class="material-symbols-outlined">delete_forever</span>
+                                            Delete All Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- External JavaScript Files -->
+    <script src="/src/js/admin/settings.js"></script>
+  
+</body>
+</html>
