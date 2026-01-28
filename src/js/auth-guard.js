@@ -82,7 +82,7 @@ class AuthGuard {
     isAdminPage() {
         // List of admin-only pages
         const adminPages = [
-            'index.html',
+            'dashboard.html',
             'product.html',
             'categories.html',
             'inventory.html',
@@ -139,13 +139,13 @@ class AuthGuard {
         localStorage.removeItem(AUTH_CONFIG.STORAGE_KEYS.CURRENT_USER);
         
         const redirectParam = reason ? `?logout=true&reason=${encodeURIComponent(reason)}` : '?logout=true';
-        window.location.href = `auth.html${redirectParam}`;
+        window.location.href = `index.html${redirectParam}`;
     }
     
     redirectToLogin(params = '') {
         const redirectUrl = window.location.pathname.split('/').pop();
         const fullParams = params ? `${params}&redirect=${encodeURIComponent(redirectUrl)}` : `redirect=${encodeURIComponent(redirectUrl)}`;
-        window.location.href = `auth.html?${fullParams}`;
+        window.location.href = `index.html?${fullParams}`;
     }
     
     redirectToDashboard() {
@@ -154,7 +154,7 @@ class AuthGuard {
             if (this.isAdmin()) {
                 window.location.href = '/public/admin/dashboard.html';
             } else {
-                window.location.href = '/public/index.html';
+                window.location.href = '/public/store.html';
             }
         } else {
             this.redirectToLogin();
