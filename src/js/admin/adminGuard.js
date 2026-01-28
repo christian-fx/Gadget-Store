@@ -29,7 +29,7 @@ class AdminGuard {
     if (!isLoggedIn || !currentUser) {
       // Redirect to login page with redirect parameter
       const redirect = encodeURIComponent(this.currentPage);
-      window.location.href = `/public/auth.html?auth=required&redirect=${redirect}`;
+      window.location.href = `/public/index.html?auth=required&redirect=${redirect}`;
       return;
     }
     
@@ -45,7 +45,7 @@ class AdminGuard {
       
       if (!isAdmin) {
         const redirect = encodeURIComponent(this.currentPage);
-        window.location.href = `/public/auth.html?admin=required&redirect=${redirect}`;
+        window.location.href = `/public/index.html?admin=required&redirect=${redirect}`;
         return;
       }
     }
@@ -97,7 +97,7 @@ class AdminGuard {
         if (now - lastActivity > timeout) {
           // Session expired
           this.logout();
-          window.location.href = '/public/auth.html?session=expired';
+          window.location.href = '/public/index.html?session=expired';
         }
       }
       updateActivity();
