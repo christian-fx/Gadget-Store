@@ -2,12 +2,11 @@
 // AUTHENTICATION CONFIGURATION
 // =============================================
 const AUTH_CONFIG = {
-    // Admin Credentials (HARDCODED - For demo only)
     ADMIN_EMAIL: "akabuezechris432@gmail.com",
     ADMIN_PASSWORD: "Naomie@18",
     ADMIN_KEY: "GADGET@ADMIN#2024!SECURE!KEY",
     
-    // Default Admin User (will be created in localStorage)
+    // Default Admin User 
     DEFAULT_ADMIN: {
         id: 1,
         firstName: "Admin",
@@ -286,7 +285,7 @@ class AuthService {
         localStorage.setItem(AUTH_CONFIG.STORAGE_KEYS.REMEMBER_ME, 'false');
         
         // Redirect to login page
-        window.location.href = "index.html";
+        window.location.href = "auth.html";
     }
     
     // Check if user is authenticated
