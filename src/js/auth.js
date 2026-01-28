@@ -286,7 +286,7 @@ class AuthService {
         localStorage.setItem(AUTH_CONFIG.STORAGE_KEYS.REMEMBER_ME, 'false');
         
         // Redirect to login page
-        window.location.href = "auth.html";
+        window.location.href = "index.html";
     }
     
     // Check if user is authenticated
