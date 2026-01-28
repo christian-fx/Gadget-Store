@@ -1,4 +1,4 @@
-# Gadget Store
+# Gadget Admin
 
 A comprehensive e-commerce platform for selling gadgets and electronics with a powerful admin dashboard for managing products, inventory, customers, and orders.
 
