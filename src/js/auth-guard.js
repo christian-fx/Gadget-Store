@@ -87,7 +87,7 @@ class AuthGuard {
             'categories.html',
             'inventory.html',
             'orders.html',
-            'settings.html'
+            'settings.html',
             'customer.html'
         ];
         
