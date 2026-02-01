@@ -40,7 +40,7 @@ A comprehensive e-commerce platform for selling gadgets and electronics with a p
 ```
 Gadget Store/
 ├── public/
-│   ├── auth.html              # Authentication page
+│   ├── index.html              # Authentication page
 │   └── admin/
 │       ├── dashboard.html      # Admin dashboard
 │       ├── products.html       # Product management
