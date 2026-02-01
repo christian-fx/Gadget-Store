@@ -21,14 +21,18 @@ const AUTH_CONFIG = {
         isActive: true
     },
     
-    // Storage Keys
+        // Storage Keys
     STORAGE_KEYS: {
-        USERS: 'gadgetstore_users',
-        CURRENT_USER: 'gadgetstore_current_user',
-        IS_LOGGED_IN: 'gadgetstore_is_logged_in',
-        REMEMBER_ME: 'gadgetstore_remember_me'
-    }
-
+            USERS: 'gadgetstore_users',
+            CURRENT_USER: 'gadgetstore_current_user',
+            IS_LOGGED_IN: 'gadgetstore_is_logged_in',
+            REMEMBER_ME: 'gadgetstore_remember_me'
+        },
+        
+        // Session Timeout (in minutes)
+        SESSION_TIMEOUT: 60, // 60 minutes
+        REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
+    };
 // =============================================
 // AUTHENTICATION SERVICE
 // =============================================
