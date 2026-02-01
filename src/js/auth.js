@@ -193,7 +193,7 @@ class AuthService {
                         message: "Admin login successful!",
                         user: user,
                         isAdmin: true,
-                        redirectTo: "/src/js/admin/dashboard.js"
+                        redirectTo: "/public/admin/dashboard.html"
                     });
                 } else {
                     // Regular user login
@@ -210,7 +210,7 @@ class AuthService {
                         message: "Login successful!",
                         user: user,
                         isAdmin: user.userType === 'staff' || user.role === 'admin',
-                        redirectTo: user.userType === 'staff' ? "/src/js/admin/dashboard.js" : "/index.html"
+                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/index.html"
                     });
                 }
             }, 1000); // Simulate 1 second delay
@@ -303,7 +303,7 @@ class AuthService {
     // Redirect to dashboard based on user role
     redirectToDashboard(user) {
         if (user.role === 'admin' || user.role === 'super_admin' || user.userType === 'staff') {
-            window.location.href = "/src/js/admin/dashboard.js";
+            window.location.href = "/public/admin/dashboard.html";
         } else {
             window.location.href = "/public/index.html";
         }
