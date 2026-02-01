@@ -27,12 +27,7 @@ const AUTH_CONFIG = {
         CURRENT_USER: 'gadgetstore_current_user',
         IS_LOGGED_IN: 'gadgetstore_is_logged_in',
         REMEMBER_ME: 'gadgetstore_remember_me'
-    },
-    
-    // Session Timeout (in minutes)
-    SESSION_TIMEOUT: 60, // 60 minutes
-    REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
-};
+    }
 
 // =============================================
 // AUTHENTICATION SERVICE
@@ -304,7 +299,7 @@ class AuthService {
         if (user.role === 'admin' || user.role === 'super_admin' || user.userType === 'staff') {
             window.location.href = "/public/admin/dashboard.html";
         } else {
-            window.location.href = "/public/index.html";
+            window.location.href = "index.html";
         }
     }
     

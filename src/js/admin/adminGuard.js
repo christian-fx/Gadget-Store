@@ -29,7 +29,7 @@ class AdminGuard {
     if (!isLoggedIn || !currentUser) {
       // Redirect to login page with redirect parameter
       const redirect = encodeURIComponent(this.currentPage);
-      window.location.href = `/public/index.html?auth=required&redirect=${redirect}`;
+      window.location.href = `index.html?auth=required&redirect=${redirect}`;
       return;
     }
     
@@ -86,26 +86,9 @@ class AdminGuard {
       localStorage.setItem(this.storageKeys.LAST_ACTIVITY, new Date().getTime().toString());
     };
     
-    // Check session timeout
-    const checkSessionTimeout = () => {
-      const lastLogin = localStorage.getItem(this.storageKeys.LAST_ACTIVITY);
-      if (lastLogin) {
-        const now = new Date().getTime();
-        const lastActivity = parseInt(lastLogin);
-        const timeout = 30 * 60 * 1000; // 30 minutes
-        
-        if (now - lastActivity > timeout) {
-          // Session expired
-          this.logout();
-          window.location.href = '/public/index.html?session=expired';
-        }
-      }
-      updateActivity();
-    };
+
     
-    // Initial check
-    checkSessionTimeout();
-    
+
     // Update activity on user interaction
     document.addEventListener('click', checkSessionTimeout);
     document.addEventListener('keypress', checkSessionTimeout);
