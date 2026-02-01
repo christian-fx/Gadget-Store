@@ -1,10 +1,10 @@
 // Dashboard functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const sidebar = document.getElementById('sidebar');
     const openSidebarBtn = document.getElementById('openSidebar');
     const closeSidebarBtn = document.getElementById('closeSidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
-    
+
     const notificationsBtn = document.getElementById('notificationsBtn');
     const notificationsDropdown = document.getElementById('notificationsDropdown');
     const notificationBadge = document.getElementById('notificationBadge');
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const topProducts = document.getElementById('topProducts');
     const recentCustomers = document.getElementById('recentCustomers');
     const quickStats = document.getElementById('quickStats');
-    
+
     // Local Storage Keys
     const STORAGE_KEYS = {
         PRODUCTS: 'gadget_admin_products',
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
                 localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mockProducts));
             }
-            
+
             // Initialize categories if empty
             if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
                 const mockCategories = [
@@ -203,40 +203,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 ];
                 localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(mockCategories));
             }
-            
+
             // Initialize dashboard data if empty
             if (!localStorage.getItem(STORAGE_KEYS.DASHBOARD_DATA)) {
                 localStorage.setItem(STORAGE_KEYS.DASHBOARD_DATA, JSON.stringify(DASHBOARD_DATA));
             }
         }
-        
+
         static getProducts() {
             return JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
         }
-        
+
         static getCategories() {
             return JSON.parse(localStorage.getItem(STORAGE_KEYS.CATEGORIES)) || [];
         }
-        
+
         static getDashboardData() {
             return JSON.parse(localStorage.getItem(STORAGE_KEYS.DASHBOARD_DATA)) || DASHBOARD_DATA;
         }
-        
+
         static getLowStockProducts() {
             const products = this.getProducts();
             return products.filter(product => product.stock <= 10 && product.stock > 0);
         }
-        
+
         static getOutOfStockProducts() {
             const products = this.getProducts();
             return products.filter(product => product.stock === 0);
         }
-        
+
         static getTotalStockValue() {
             const products = this.getProducts();
             return products.reduce((total, product) => total + (product.price * product.stock), 0);
         }
-        
+
         static getTopProducts(limit = 3) {
             const products = this.getProducts();
             // Sort by stock value (price * quantity sold approximation)
@@ -244,11 +244,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 .sort((a, b) => (b.price * b.stock) - (a.price * a.stock))
                 .slice(0, limit);
         }
-        
+
         static getCategoryRevenue() {
             const products = this.getProducts();
             const categories = this.getCategories();
-            
+
             const categoryRevenue = {};
             categories.forEach(cat => {
                 categoryRevenue[cat.slug] = {
@@ -257,20 +257,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     productCount: 0
                 };
             });
-            
+
             products.forEach(product => {
                 if (categoryRevenue[product.category]) {
                     categoryRevenue[product.category].revenue += product.price * product.stock;
                     categoryRevenue[product.category].productCount += 1;
                 }
             });
-            
+
             // Calculate percentages
             const totalRevenue = Object.values(categoryRevenue).reduce((sum, cat) => sum + cat.revenue, 0);
             Object.values(categoryRevenue).forEach(cat => {
                 cat.percentage = totalRevenue > 0 ? Math.round((cat.revenue / totalRevenue) * 100) : 0;
             });
-            
+
             // Sort by revenue
             return Object.values(categoryRevenue)
                 .filter(cat => cat.revenue > 0)
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarOverlay.classList.add('block', 'opacity-100');
         document.body.style.overflow = 'hidden';
     }
-    
+
     // Function to close sidebar
     function closeSidebar() {
         sidebar.classList.add('-translate-x-full');
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sidebarOverlay.classList.add('hidden', 'opacity-0');
         document.body.style.overflow = '';
     }
-    
+
     // Function to toggle notifications dropdown
     function toggleNotifications() {
         notificationsDropdown.classList.toggle('hidden');
@@ -310,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Function to update notification badge
     function updateNotificationBadge() {
         const dashboardData = StorageManager.getDashboardData();
@@ -322,27 +322,27 @@ document.addEventListener('DOMContentLoaded', function() {
             notificationBadge.classList.add('hidden');
         }
     }
-    
+
     // Function to populate notifications
     function populateNotifications() {
         const container = notificationsDropdown.querySelector('.max-h-96');
         container.innerHTML = '';
-        
+
         const dashboardData = StorageManager.getDashboardData();
         dashboardData.notifications.forEach(notification => {
             const notificationItem = document.createElement('div');
             notificationItem.className = `p-4 border-b border-slate-100 hover:bg-slate-50 transition-colors ${notification.read ? '' : 'bg-blue-50'}`;
-            
+
             const icon = notification.type === 'order' ? 'shopping_cart' :
-                        notification.type === 'inventory' ? 'inventory_2' :
-                        notification.type === 'customer' ? 'group' :
+                notification.type === 'inventory' ? 'inventory_2' :
+                    notification.type === 'customer' ? 'group' :
                         notification.type === 'system' ? 'settings' : 'star';
-            
+
             const iconColor = notification.type === 'order' ? 'text-primary' :
-                            notification.type === 'inventory' ? 'text-amber-500' :
-                            notification.type === 'customer' ? 'text-emerald-500' :
-                            notification.type === 'system' ? 'text-indigo-500' : 'text-amber-500';
-            
+                notification.type === 'inventory' ? 'text-amber-500' :
+                    notification.type === 'customer' ? 'text-emerald-500' :
+                        notification.type === 'system' ? 'text-indigo-500' : 'text-amber-500';
+
             notificationItem.innerHTML = `
                 <div class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0">
@@ -358,13 +358,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     ` : ''}
                 </div>
             `;
-            
+
             container.appendChild(notificationItem);
         });
-        
+
         updateNotificationBadge();
     }
-    
+
     // Function to populate recent orders
     function populateRecentOrders() {
         recentOrders.innerHTML = `
@@ -378,13 +378,13 @@ document.addEventListener('DOMContentLoaded', function() {
             </tr>
         `;
     }
-    
+
     // Function to populate top categories
     function populateTopCategories() {
         topCategories.innerHTML = '';
-        
+
         const categoryRevenue = StorageManager.getCategoryRevenue();
-        
+
         if (categoryRevenue.length === 0) {
             topCategories.innerHTML = `
                 <div class="text-center py-4 text-slate-500">
@@ -393,9 +393,9 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
-        
+
         const colors = ['bg-primary', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-rose-500'];
-        
+
         categoryRevenue.forEach((category, index) => {
             const color = colors[index] || 'bg-slate-500';
             const revenueFormatted = new Intl.NumberFormat('en-US', {
@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(category.revenue);
-            
+
             const categoryItem = document.createElement('div');
             categoryItem.innerHTML = `
                 <div>
@@ -421,13 +421,13 @@ document.addEventListener('DOMContentLoaded', function() {
             topCategories.appendChild(categoryItem);
         });
     }
-    
+
     // Function to populate top products
     function populateTopProducts() {
         topProducts.innerHTML = '';
-        
+
         const topProductsData = StorageManager.getTopProducts(8);
-        
+
         if (topProductsData.length === 0) {
             topProducts.innerHTML = `
                 <div class="text-center py-4 text-slate-500">
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
-        
+
         topProductsData.forEach(product => {
             const productItem = document.createElement('div');
             productItem.className = 'flex items-center gap-3';
@@ -456,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
             topProducts.appendChild(productItem);
         });
     }
-    
+
     // Function to populate recent customers
     function populateRecentCustomers() {
         recentCustomers.innerHTML = `
@@ -468,16 +468,16 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
     }
-    
+
     // Function to populate quick stats
     function populateQuickStats() {
         quickStats.innerHTML = '';
-        
+
         const products = StorageManager.getProducts();
         const lowStockProducts = StorageManager.getLowStockProducts();
         const outOfStockProducts = StorageManager.getOutOfStockProducts();
         const totalStockValue = StorageManager.getTotalStockValue();
-        
+
         const stats = [
             {
                 icon: 'pending',
@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 changeColor: 'text-emerald-600'
             }
         ];
-        
+
         stats.forEach(stat => {
             const statItem = document.createElement('div');
             statItem.className = 'flex items-center justify-between';
@@ -531,20 +531,20 @@ document.addEventListener('DOMContentLoaded', function() {
             quickStats.appendChild(statItem);
         });
     }
-    
+
     // Function to update dashboard summary
     function updateDashboardSummary() {
         const products = StorageManager.getProducts();
         const lowStockProducts = StorageManager.getLowStockProducts();
         const outOfStockProducts = StorageManager.getOutOfStockProducts();
         const totalStockValue = StorageManager.getTotalStockValue();
-        
+
         // Update total products
         document.getElementById('totalProducts').textContent = products.length.toString();
-        
+
         // Update low stock count
         document.getElementById('lowStockCount').textContent = lowStockProducts.length.toString();
-        
+
         // Update total revenue (based on stock value)
         const formattedValue = new Intl.NumberFormat('en-US', {
             style: 'currency',
@@ -552,31 +552,31 @@ document.addEventListener('DOMContentLoaded', function() {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(totalStockValue);
-        
+
         document.getElementById('totalRevenue').textContent = formattedValue;
     }
-    
+
     // Helper function for status text
     function getStatusText(status) {
-        switch(status) {
+        switch (status) {
             case 'instock': return 'In Stock';
             case 'lowstock': return 'Low Stock';
             case 'outstock': return 'Out of Stock';
             default: return 'Unknown';
         }
     }
-    
+
     // Function to initialize revenue chart
     function initRevenueChart() {
         const ctx = document.getElementById('revenueChart').getContext('2d');
-        
+
         // Destroy existing chart if it exists
         if (window.revenueChartInstance) {
             window.revenueChartInstance.destroy();
         }
-        
+
         const dashboardData = StorageManager.getDashboardData();
-        
+
         window.revenueChartInstance = new Chart(ctx, {
             type: 'line',
             data: dashboardData.revenue,
@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         mode: 'index',
                         intersect: false,
                         callbacks: {
-                            label: function(context) {
+                            label: function (context) {
                                 return `$${context.parsed.y.toLocaleString()}`;
                             }
                         }
@@ -604,7 +604,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             color: 'rgba(0, 0, 0, 0.05)'
                         },
                         ticks: {
-                            callback: function(value) {
+                            callback: function (value) {
                                 return '$' + value.toLocaleString();
                             }
                         }
@@ -622,12 +622,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     // Function to update chart data based on period
     function updateChartData(period) {
         let newData;
-        
-        switch(period) {
+
+        switch (period) {
             case '1y':
                 newData = {
                     labels: ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
@@ -647,18 +647,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     data: dashboardData.revenue.datasets[0].data
                 };
         }
-        
+
         window.revenueChartInstance.data.labels = newData.labels;
         window.revenueChartInstance.data.datasets[0].data = newData.data;
         window.revenueChartInstance.update();
     }
-    
+
     // Function to update live statistics (simulated)
     function updateLiveStatistics() {
         // Update low stock count from real data
         const lowStockProducts = StorageManager.getLowStockProducts();
         document.getElementById('lowStockCount').textContent = lowStockProducts.length.toString();
-        
+
         // Update notification badge randomly
         if (Math.random() > 0.8) { // 20% chance to add notification
             const dashboardData = StorageManager.getDashboardData();
@@ -678,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-    
+
     // Initialize dashboard
     function initDashboard() {
         StorageManager.initStorage();
@@ -691,41 +691,41 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDashboardSummary();
         initRevenueChart();
         updateNotificationBadge();
-        
+
         // Start live updates
         setInterval(updateLiveStatistics, 30000); // Update every 30 seconds
     }
-    
+
     // Event listeners
     openSidebarBtn.addEventListener('click', openSidebar);
     closeSidebarBtn.addEventListener('click', closeSidebar);
     sidebarOverlay.addEventListener('click', closeSidebar);
     notificationsBtn.addEventListener('click', toggleNotifications);
-    
+
     // Chart period change
-    chartPeriod.addEventListener('change', function() {
+    chartPeriod.addEventListener('change', function () {
         updateChartData(this.value);
     });
-    
+
     // Close notifications dropdown when clicking outside
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         if (!notificationsBtn.contains(event.target) && !notificationsDropdown.contains(event.target)) {
             notificationsDropdown.classList.add('hidden');
         }
     });
-    
+
     // Close sidebar when clicking outside on mobile
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
         const isClickInsideSidebar = sidebar.contains(event.target);
         const isClickOnOpenBtn = openSidebarBtn.contains(event.target);
-        
+
         if (!isClickInsideSidebar && !isClickOnOpenBtn && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
             closeSidebar();
         }
     });
-    
+
     // Handle window resize
-    window.addEventListener('resize', function() {
+    window.addEventListener('resize', function () {
         if (window.innerWidth >= 1024) {
             sidebar.classList.remove('-translate-x-full');
             sidebarOverlay.classList.add('hidden');
@@ -735,9 +735,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Handle escape key for closing sidebar and notifications
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
             if (!notificationsDropdown.classList.contains('hidden')) {
                 notificationsDropdown.classList.add('hidden');
@@ -747,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Initialize the dashboard
     initDashboard();
 });
