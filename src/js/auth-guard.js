@@ -9,6 +9,8 @@ const AUTH_CONFIG = {
         IS_LOGGED_IN: 'gadgetstore_is_logged_in',
         REMEMBER_ME: 'gadgetstore_remember_me'
     },
+    SESSION_TIMEOUT: 60, // 60 minutes
+    REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
 };
 
 class AuthGuard {
@@ -26,6 +28,11 @@ class AuthGuard {
             return;
         }
         
+        // Check session timeout
+        if (!this.isSessionValid()) {
+            this.logout('Session expired');
+            return;
+        }
         
         // Update last activity timestamp
         this.updateLastActivity();
@@ -75,7 +82,7 @@ class AuthGuard {
     isAdminPage() {
         // List of admin-only pages
         const adminPages = [
-            'dashboard.html',
+            'index.html',
             'product.html',
             'categories.html',
             'inventory.html',
@@ -145,9 +152,9 @@ class AuthGuard {
         const user = this.getCurrentUser();
         if (user) {
             if (this.isAdmin()) {
-                window.location.href = '/public/admin/dashboard.html';
+                window.location.href = '/src/js/admin/dashboard.js';
             } else {
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             }
         } else {
             this.redirectToLogin();

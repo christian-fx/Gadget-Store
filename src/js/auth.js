@@ -2,11 +2,12 @@
 // AUTHENTICATION CONFIGURATION
 // =============================================
 const AUTH_CONFIG = {
+    // Admin Credentials (HARDCODED - For demo only)
     ADMIN_EMAIL: "akabuezechris432@gmail.com",
     ADMIN_PASSWORD: "Naomie@18",
     ADMIN_KEY: "GADGET@ADMIN#2024!SECURE!KEY",
     
-    // Default Admin User 
+    // Default Admin User (will be created in localStorage)
     DEFAULT_ADMIN: {
         id: 1,
         firstName: "Admin",
@@ -21,18 +22,19 @@ const AUTH_CONFIG = {
         isActive: true
     },
     
-        // Storage Keys
+    // Storage Keys
     STORAGE_KEYS: {
-            USERS: 'gadgetstore_users',
-            CURRENT_USER: 'gadgetstore_current_user',
-            IS_LOGGED_IN: 'gadgetstore_is_logged_in',
-            REMEMBER_ME: 'gadgetstore_remember_me'
-        },
-        
-        // Session Timeout (in minutes)
-        SESSION_TIMEOUT: 60, // 60 minutes
-        REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
-    };
+        USERS: 'gadgetstore_users',
+        CURRENT_USER: 'gadgetstore_current_user',
+        IS_LOGGED_IN: 'gadgetstore_is_logged_in',
+        REMEMBER_ME: 'gadgetstore_remember_me'
+    },
+    
+    // Session Timeout (in minutes)
+    SESSION_TIMEOUT: 60, // 60 minutes
+    REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
+};
+
 // =============================================
 // AUTHENTICATION SERVICE
 // =============================================
@@ -191,7 +193,7 @@ class AuthService {
                         message: "Admin login successful!",
                         user: user,
                         isAdmin: true,
-                        redirectTo: "/public/admin/dashboard.html"
+                        redirectTo: "/src/js/admin/dashboard.js"
                     });
                 } else {
                     // Regular user login
@@ -208,7 +210,7 @@ class AuthService {
                         message: "Login successful!",
                         user: user,
                         isAdmin: user.userType === 'staff' || user.role === 'admin',
-                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/public/index.html"
+                        redirectTo: user.userType === 'staff' ? "/src/js/admin/dashboard.js" : "/index.html"
                     });
                 }
             }, 1000); // Simulate 1 second delay
@@ -301,9 +303,9 @@ class AuthService {
     // Redirect to dashboard based on user role
     redirectToDashboard(user) {
         if (user.role === 'admin' || user.role === 'super_admin' || user.userType === 'staff') {
-            window.location.href = "/public/admin/dashboard.html";
+            window.location.href = "/src/js/admin/dashboard.js";
         } else {
-            window.location.href = "index.html";
+            window.location.href = "/public/index.html";
         }
     }
     
