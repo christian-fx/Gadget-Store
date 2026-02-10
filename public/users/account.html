@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Go Gadgets - Account</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { "primary": "#2b8cee" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-display text-slate-900 bg-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
+            <a href="/index.html" class="flex items-center gap-2 text-primary font-bold text-lg">
+                <span class="material-symbols-outlined text-[24px]">bolt</span>
+                Go Gadgets
+            </a>
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="store.html"
+                    class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Store</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Mac</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">iPad</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">iPhone</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Watch</a>
+                <a href="#"
+                    class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Accessories</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <button
+                    class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">search</span>
+                </button>
+                <a href="cart.html"
+                    class="relative w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">shopping_bag</span>
+                    <span id="cartBadge"
+                        class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full items-center justify-center">0</span>
+                </a>
+                <a href="account.html"
+                    class="w-8 h-8 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center ring-2 ring-primary">
+                    <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8">
+        <!-- Page Title -->
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-slate-900">Account</h1>
+            <p class="text-sm text-slate-500 mt-1">Manage your profile and checkout preferences</p>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <!-- Sidebar -->
+            <aside class="w-full md:w-48 flex-shrink-0">
+                <nav class="space-y-1" id="accountNav">
+                    <a href="#overview" data-tab="overview"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                        Overview
+                    </a>
+                    <a href="#orders" data-tab="orders"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+                        Orders
+                    </a>
+                    <a href="#settings" data-tab="settings"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium bg-primary/10 text-primary">
+                        <span class="material-symbols-outlined text-[20px]">settings</span>
+                        Settings
+                    </a>
+                    <a href="#wishlist" data-tab="wishlist"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                        <span class="material-symbols-outlined text-[20px]">favorite</span>
+                        Wishlist
+                    </a>
+                </nav>
+                <div class="mt-6 border-t border-slate-100 pt-4">
+                    <button id="signOutBtn"
+                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 transition-colors w-full">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                        Sign Out
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Panel -->
+            <section class="flex-1 min-w-0">
+                <!-- Settings Tab (default visible) -->
+                <div id="settingsPanel">
+                    <!-- Personal Information -->
+                    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-6">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                            <h2 class="text-lg font-bold text-slate-900">Personal Information</h2>
+                            <button id="editProfileBtn" class="text-sm text-primary hover:underline font-medium">Edit
+                                Profile</button>
+                        </div>
+                        <div class="p-6">
+                            <!-- Avatar -->
+                            <div class="flex items-center gap-4 mb-6">
+                                <div
+                                    class="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+                                    <span class="material-symbols-outlined text-slate-400 text-[36px]">person</span>
+                                </div>
+                                <div>
+                                    <h3 id="displayName" class="text-base font-bold text-slate-900">Alex Chen</h3>
+                                    <p id="displayEmail" class="text-sm text-slate-500">alex.chen@example.com</p>
+                                    <button class="text-xs text-primary hover:underline font-medium mt-1">Change
+                                        Avatar</button>
+                                </div>
+                            </div>
+
+                            <!-- Form Fields -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">First Name</label>
+                                    <input type="text" id="firstName" value="Alex" disabled
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
+                                    <input type="text" id="lastName" value="Chen" disabled
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
+                                    <input type="email" id="emailField" value="alex.chen@example.com" disabled
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
+                                    <input type="tel" id="phoneField" value="+1 (555) 123-4567" disabled
+                                        class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Checkout Details -->
+                    <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden mb-6">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+                            <h2 class="text-lg font-bold text-slate-900">Checkout Details</h2>
+                        </div>
+                        <div class="p-6">
+                            <!-- Shipping Address -->
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Shipping Address
+                            </h3>
+                            <div id="addressList" class="space-y-3 mb-6">
+                                <!-- Dynamic Addresses -->
+                            </div>
+                            <div class="border-t border-dashed border-slate-200 py-3 mb-6">
+                                <button id="addAddressBtn" class="text-sm text-primary hover:underline font-medium">+
+                                    Add New
+                                    Address</button>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Payment Methods
+                            </h3>
+                            <div id="paymentList" class="space-y-3">
+                                <!-- Dynamic Payments -->
+                            </div>
+                            <div class="border-t border-dashed border-slate-200 py-3 mt-4">
+                                <button id="addPaymentBtn" class="text-sm text-primary hover:underline font-medium">+
+                                    Add New
+                                    Payment Method</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <button id="saveBtn"
+                        class="hidden px-6 py-3 bg-primary hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors shadow-sm shadow-blue-500/20">
+                        Save Changes
+                    </button>
+                </div>
+
+                <!-- Overview Tab (hidden by default) -->
+                <div id="overviewPanel" class="hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary text-[22px]">shopping_bag</span>
+                                </div>
+                                <span class="text-sm text-slate-500">Total Orders</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900">12</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-emerald-600 text-[22px]">favorite</span>
+                                </div>
+                                <span class="text-sm text-slate-500">Wishlist Items</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900">4</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-amber-600 text-[22px]">star</span>
+                                </div>
+                                <span class="text-sm text-slate-500">Reviews Given</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900">7</p>
+                        </div>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                        <h3 class="font-bold text-slate-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+                                    <span
+                                        class="material-symbols-outlined text-emerald-600 text-[16px]">check_circle</span>
+                                </div>
+                                <div class="flex-1"><span class="font-medium">Order #1089</span> delivered successfully
+                                </div>
+                                <span class="text-slate-400 text-xs">2 days ago</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <span
+                                        class="material-symbols-outlined text-primary text-[16px]">local_shipping</span>
+                                </div>
+                                <div class="flex-1"><span class="font-medium">Order #1092</span> is in transit</div>
+                                <span class="text-slate-400 text-xs">1 day ago</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                                <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-amber-600 text-[16px]">star</span>
+                                </div>
+                                <div class="flex-1">You reviewed <span class="font-medium">SonicPro X1 Headphones</span>
+                                </div>
+                                <span class="text-slate-400 text-xs">5 days ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Tab (hidden by default) -->
+                <div id="ordersPanel" class="hidden">
+                    <div class="space-y-4">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <span class="text-sm font-bold text-slate-900">Order #1092</span>
+                                    <span
+                                        class="ml-2 text-[10px] font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded uppercase">In
+                                        Transit</span>
+                                </div>
+                                <span class="text-xs text-slate-400">Feb 8, 2026</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-slate-50 rounded-lg overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop"
+                                        alt="" class="w-full h-full object-cover" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-900">SonicPro X1 Headphones</p>
+                                    <p class="text-xs text-slate-500">Qty: 1</p>
+                                </div>
+                                <p class="text-sm font-bold text-slate-900">$299.00</p>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <span class="text-sm font-bold text-slate-900">Order #1089</span>
+                                    <span
+                                        class="ml-2 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded uppercase">Delivered</span>
+                                </div>
+                                <span class="text-xs text-slate-400">Feb 3, 2026</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-slate-50 rounded-lg overflow-hidden">
+                                    <img src="https://images.unsplash.com/photo-1546868871-af0de0ae72be?w=100&h=100&fit=crop"
+                                        alt="" class="w-full h-full object-cover" />
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-slate-900">Horizon Watch Ultra</p>
+                                    <p class="text-xs text-slate-500">Qty: 1</p>
+                                </div>
+                                <p class="text-sm font-bold text-slate-900">$399.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wishlist Tab (hidden by default) -->
+                <div id="wishlistPanel" class="hidden">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex gap-4">
+                            <div class="w-20 h-20 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&h=200&fit=crop"
+                                    alt="" class="w-full h-full object-cover" />
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-slate-900">NovaBook Air 15-inch M3</h3>
+                                <p class="text-sm font-bold text-slate-900 mt-1">$1,499.00</p>
+                                <button class="mt-2 text-xs text-primary hover:underline font-medium">Add to
+                                    Cart</button>
+                            </div>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-2xl p-4 flex gap-4">
+                            <div class="w-20 h-20 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?w=200&h=200&fit=crop"
+                                    alt="" class="w-full h-full object-cover" />
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-slate-900">Oculus Vision Pro</h3>
+                                <p class="text-sm font-bold text-slate-900 mt-1">$499.00</p>
+                                <button class="mt-2 text-xs text-primary hover:underline font-medium">Add to
+                                    Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Go Gadgets</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Your one-stop destination for the latest tech,
+                        smart home devices, and premium electronics.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Shop</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">All Products</a></li>
+                        <li><a href="#" class="hover:underline">Featured</a></li>
+                        <li><a href="#" class="hover:underline">New Arrivals</a></li>
+                        <li><a href="#" class="hover:underline">Deals</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Support</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">Help Center</a></li>
+                        <li><a href="#" class="hover:underline">Returns</a></li>
+                        <li><a href="#" class="hover:underline">Shipping Info</a></li>
+                        <li><a href="#" class="hover:underline">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">About</a></li>
+                        <li><a href="#" class="hover:underline">Blog</a></li>
+                        <li><a href="#" class="hover:underline">Careers</a></li>
+                        <li><a href="#" class="hover:underline">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Address Modal -->
+    <div id="addressModal"
+        class="hidden fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+            <h3 id="addressModalTitle" class="text-xl font-bold text-slate-900 mb-4">Add New Address</h3>
+            <form id="addressForm" class="space-y-4">
+                <input type="hidden" id="addressId">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Label (e.g., Home, Work)</label>
+                    <input type="text" id="addrLabel" required
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Street Address</label>
+                    <input type="text" id="addrStreet" required
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">City</label>
+                        <input type="text" id="addrCity" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">State</label>
+                        <input type="text" id="addrState" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">ZIP Code</label>
+                        <input type="text" id="addrZip" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                    </div>
+                    <div class="flex items-end mb-2.5">
+                        <label class="flex items-center gap-2 cursor-pointer">
+                            <input type="checkbox" id="addrDefault"
+                                class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/30">
+                            <span class="text-sm text-slate-700">Set as Default</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button"
+                        class="closeModal px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">Save
+                        Address</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal"
+        class="hidden fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl p-6">
+            <h3 id="paymentModalTitle" class="text-xl font-bold text-slate-900 mb-4">Add New Card</h3>
+            <form id="paymentForm" class="space-y-4">
+                <input type="hidden" id="paymentId">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Card Number</label>
+                    <input type="text" id="payNumber" placeholder="XXXX XXXX XXXX XXXX" required
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">Expiry Date</label>
+                        <input type="text" id="payExpiry" placeholder="MM/YY" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1.5">CVV</label>
+                        <input type="text" id="payCvv" placeholder="123" required
+                            class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1.5">Name on Card</label>
+                    <input type="text" id="payName" required
+                        class="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-primary focus:ring-1 focus:ring-primary/30">
+                </div>
+                <div class="mb-2.5">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="payDefault"
+                            class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary/30">
+                        <span class="text-sm text-slate-700">Set as Default Payment Method</span>
+                    </label>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button"
+                        class="closeModal px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium transition-colors">Cancel</button>
+                    <button type="submit"
+                        class="px-6 py-2 bg-primary text-white rounded-lg font-medium hover:bg-blue-600 transition-colors">Save
+                        Card</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal"
+        class="hidden fixed inset-0 z-[60] bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl p-6 text-center">
+            <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-red-600 text-[24px]">delete</span>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Are you sure?</h3>
+            <p class="text-sm text-slate-500 mb-6">This action cannot be undone. Do you really want to delete this item?
+            </p>
+            <div class="flex justify-center gap-3">
+                <button type="button"
+                    class="closeModal px-4 py-2 text-slate-600 hover:bg-slate-50 rounded-lg font-medium transition-colors">Cancel</button>
+                <button id="confirmDeleteBtn"
+                    class="px-6 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-colors">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/src/js/user/header.js"></script>
+    <script src="/src/js/data.js"></script>
+    <script src="/src/js/user/account.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Go Gadgets - Product</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { "primary": "#2b8cee" },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="font-display text-slate-900 bg-white min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
+            <a href="/index.html" class="flex items-center gap-2 text-primary font-bold text-lg">
+                <span class="material-symbols-outlined text-[24px]">bolt</span>
+                Go Gadgets
+            </a>
+            <nav class="hidden md:flex items-center gap-6">
+                <a href="store.html"
+                    class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Store</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Mac</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">iPad</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">iPhone</a>
+                <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Watch</a>
+                <a href="#"
+                    class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Accessories</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <a href="cart.html"
+                    class="relative w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">shopping_bag</span>
+                    <span id="cartBadge"
+                        class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full items-center justify-center">0</span>
+                </a>
+                <a href="account.html"
+                    class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                    <span class="material-symbols-outlined text-slate-500 text-[20px]">person</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Promo Banner -->
+    <div class="bg-slate-50 border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-2.5 text-center">
+            <p class="text-sm text-slate-600">Get $180–$630 in credit when you trade in iPhone 11 or higher.
+                <a href="#" class="text-primary font-medium hover:underline">Buy now ›</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8">
+        <!-- Breadcrumb -->
+        <div id="breadcrumb" class="flex items-center gap-2 text-sm text-slate-500 mb-8">
+            <a href="store.html" class="hover:text-primary transition-colors">Store</a>
+            <span>›</span>
+            <span id="breadcrumbCategory" class="hover:text-primary transition-colors cursor-pointer">Category</span>
+            <span>›</span>
+            <span id="breadcrumbName" class="text-slate-900 font-medium">Product</span>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Left: Image Gallery -->
+            <div>
+                <div id="mainImageWrap" class="relative bg-slate-50 rounded-2xl overflow-hidden aspect-square mb-4">
+                    <span id="newBadge"
+                        class="hidden absolute top-4 left-4 z-10 px-3 py-1 bg-slate-800 text-white text-[11px] font-semibold uppercase rounded-full tracking-wider">New</span>
+                    <img id="mainImage" src="" alt="" class="w-full h-full object-contain p-6" />
+                </div>
+                <div id="thumbnails" class="flex gap-3"></div>
+            </div>
+
+            <!-- Right: Product Info -->
+            <div>
+                <span id="productBadge" class="text-xs font-medium text-slate-500 uppercase tracking-wider"></span>
+                <h1 id="productName" class="text-3xl font-bold text-slate-900 mt-1"></h1>
+                <p id="productSubtitle" class="text-primary font-medium mt-1"></p>
+                <p id="productPrice" class="text-xl font-bold text-slate-900 mt-4"></p>
+                <p id="productPriceMonthly" class="text-sm text-slate-500 mt-0.5"></p>
+
+                <!-- Model Selection -->
+                <div id="modelSection" class="mt-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-900">Model</h3>
+                        <span id="selectedModelLabel" class="text-sm text-primary font-medium"></span>
+                    </div>
+                    <div id="modelOptions" class="space-y-3"></div>
+                </div>
+
+                <!-- Color/Finish Selection -->
+                <div id="colorSection" class="mt-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-900">Finish</h3>
+                        <span id="selectedColorLabel" class="text-sm text-primary font-medium"></span>
+                    </div>
+                    <div id="colorOptions" class="flex gap-3"></div>
+                </div>
+
+                <!-- Storage Selection -->
+                <div id="storageSection" class="mt-8">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-900">Storage</h3>
+                        <span id="selectedStorageLabel" class="text-sm text-primary font-medium"></span>
+                    </div>
+                    <div id="storageOptions" class="grid grid-cols-3 gap-3"></div>
+                </div>
+
+                <!-- Trade In -->
+                <div id="tradeInSection" class="mt-8">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3">Apple Trade In</h3>
+                    <div class="space-y-2">
+                        <button
+                            class="w-full text-left p-4 border border-slate-200 rounded-xl hover:border-primary/40 transition-colors">
+                            <span class="text-sm font-semibold text-slate-900">Select a smartphone</span>
+                            <p class="text-xs text-slate-500 mt-0.5">Answer a few questions to get your estimate.</p>
+                        </button>
+                        <button
+                            class="w-full text-left p-4 border border-slate-200 rounded-xl hover:border-primary/40 transition-colors">
+                            <span class="text-sm font-semibold text-slate-900">No trade-in</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div id="descriptionSection" class="mt-8 hidden">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3">About this product</h3>
+                    <p id="productDescription" class="text-sm text-slate-600 leading-relaxed"></p>
+                </div>
+
+                <!-- Specifications -->
+                <div id="specsSection" class="mt-8 hidden">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3">Specifications</h3>
+                    <div id="specsGrid" class="divide-y divide-slate-100"></div>
+                </div>
+
+                <!-- Price & Add to Bag -->
+                <div class="mt-8 bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                    <p class="text-sm text-slate-600">Your new <span id="summaryName"
+                            class="font-medium text-slate-900"></span>.</p>
+                    <p id="summaryPrice" class="text-3xl font-bold text-slate-900 mt-2"></p>
+                    <p class="text-xs text-slate-500 mt-1">One-time payment. Price includes $30 connectivity discount.
+                    </p>
+                    <div class="mt-5 flex gap-3">
+                        <button id="addToBagBtn"
+                            class="flex-1 py-3.5 bg-primary hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors shadow-sm shadow-blue-500/20">
+                            Add to Bag
+                        </button>
+                        <button id="wishlistBtn"
+                            class="w-14 flex items-center justify-center border border-slate-200 rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 transition-colors">
+                            <span class="material-symbols-outlined">favorite</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-center gap-6 mt-4 text-xs text-slate-500">
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">local_shipping</span>
+                            <div>
+                                <p class="font-semibold text-slate-700">Free Shipping</p>
+                                <p>Get it by Tomorrow</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]">storefront</span>
+                            <div>
+                                <p class="font-semibold text-slate-700">Pick Up</p>
+                                <p>Available today at Store</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div id="features" class="mt-8 grid grid-cols-2 gap-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-16">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Go Gadgets</h4>
+                    <p class="text-sm text-slate-500 leading-relaxed">Your one-stop destination for the latest tech,
+                        smart home devices, and premium electronics.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Shop</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">All Products</a></li>
+                        <li><a href="#" class="hover:underline">Featured</a></li>
+                        <li><a href="#" class="hover:underline">New Arrivals</a></li>
+                        <li><a href="#" class="hover:underline">Deals</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Support</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">Help Center</a></li>
+                        <li><a href="#" class="hover:underline">Returns</a></li>
+                        <li><a href="#" class="hover:underline">Shipping Info</a></li>
+                        <li><a href="#" class="hover:underline">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
+                    <ul class="space-y-2.5 text-sm text-primary">
+                        <li><a href="#" class="hover:underline">About</a></li>
+                        <li><a href="#" class="hover:underline">Blog</a></li>
+                        <li><a href="#" class="hover:underline">Careers</a></li>
+                        <li><a href="#" class="hover:underline">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/src/js/user/header.js"></script>
+    <script src="/src/js/data.js"></script>
+    <script src="/src/js/user/product.js"></script>
+</body>
+
+</html>

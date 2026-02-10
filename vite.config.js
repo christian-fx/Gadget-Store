@@ -16,11 +16,19 @@ export default defineConfig({
         orders: resolve(__dirname, 'public/admin/orders.html'),
         products: resolve(__dirname, 'public/admin/products.html'),
         settings: resolve(__dirname, 'public/admin/settings.html'),
+        // User pages
+        store: resolve(__dirname, 'public/users/store.html'),
+        product: resolve(__dirname, 'public/users/product.html'),
+        cart: resolve(__dirname, 'public/users/cart.html'),
+        checkout: resolve(__dirname, 'public/users/checkout.html'),
+        account: resolve(__dirname, 'public/users/account.html'),
+        receipt: resolve(__dirname, 'public/users/receipt.html'),
+        tracking: resolve(__dirname, 'public/users/tracking.html'),
       },
     },
   },
   server: {
-    open: '/index.html',  // Opens index.html on dev server start
+    open: '/public/users/store.html',  // Opens store.html on dev server start
   },
   resolve: {
     alias: {

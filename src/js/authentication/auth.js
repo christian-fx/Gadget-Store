@@ -24,16 +24,18 @@ const AUTH_CONFIG = {
 
     // Storage Keys
     STORAGE_KEYS: {
-        USERS: 'gadgetstore_users',
-        CURRENT_USER: 'gadgetstore_current_user',
-        IS_LOGGED_IN: 'gadgetstore_is_logged_in',
-        REMEMBER_ME: 'gadgetstore_remember_me'
+        USERS: 'gadget_users',
+        CURRENT_USER: 'gadget_user',
+        IS_LOGGED_IN: 'gadget_is_logged_in',
+        REMEMBER_ME: 'gadget_remember_me'
     },
 
     // Session Timeout (in minutes)
     SESSION_TIMEOUT: 60, // 60 minutes
     REMEMBER_ME_TIMEOUT: 30 * 24 * 60 // 30 days in minutes
 };
+
+
 
 // =============================================
 // AUTHENTICATION SERVICE
@@ -210,7 +212,7 @@ class AuthService {
                         message: "Login successful!",
                         user: user,
                         isAdmin: user.userType === 'staff' || user.role === 'admin',
-                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/index.html"
+                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/public/users/store.html"
                     });
                 }
             }, 1000); // Simulate 1 second delay
@@ -286,7 +288,7 @@ class AuthService {
         localStorage.setItem(AUTH_CONFIG.STORAGE_KEYS.REMEMBER_ME, 'false');
 
         // Redirect to login page
-        window.location.href = "index.html";
+        window.location.href = "/index.html";
     }
 
     // Check if user is authenticated
@@ -305,7 +307,7 @@ class AuthService {
         if (user.role === 'admin' || user.role === 'super_admin' || user.userType === 'staff') {
             window.location.href = "/public/admin/dashboard.html";
         } else {
-            window.location.href = "/public/index.html";
+            window.location.href = "/public/users/store.html";
         }
     }
 
