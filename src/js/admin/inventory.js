@@ -85,7 +85,7 @@ class StorageManager {
             ];
             localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mockProducts));
         }
-        
+
         // Initialize categories if empty
         if (!localStorage.getItem(STORAGE_KEYS.CATEGORIES)) {
             const mockCategories = [
@@ -96,13 +96,13 @@ class StorageManager {
             ];
             localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(mockCategories));
         }
-        
+
         // Initialize inventory history if empty
         if (!localStorage.getItem(STORAGE_KEYS.INVENTORY_HISTORY)) {
             localStorage.setItem(STORAGE_KEYS.INVENTORY_HISTORY, JSON.stringify([]));
         }
     }
-    
+
     static getProducts() {
         const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS)) || [];
         return products.map(product => ({
@@ -110,70 +110,73 @@ class StorageManager {
             inventoryStatus: this.getInventoryStatus(product.stock, product.minStock || 10)
         }));
     }
-    
+
     static saveProducts(products) {
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
     }
-    
+
     static getCategories() {
         return JSON.parse(localStorage.getItem(STORAGE_KEYS.CATEGORIES)) || [];
     }
-    
+
     static getInventoryHistory() {
         return JSON.parse(localStorage.getItem(STORAGE_KEYS.INVENTORY_HISTORY)) || [];
     }
-    
+
     static saveInventoryHistory(history) {
         localStorage.setItem(STORAGE_KEYS.INVENTORY_HISTORY, JSON.stringify(history));
     }
-    
-    static getInventoryStatus(currentStock, minStock = 10) {
+
+    static getInventoryStatus(currentStock, minStock) {
+        if (minStock === undefined) {
+            minStock = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('lowStockThreshold') : 10;
+        }
         if (currentStock === 0) return 'out_of_stock';
         if (currentStock <= minStock) return 'low_stock';
         return 'in_stock';
     }
-    
+
     static getLowStockProducts() {
         const products = this.getProducts();
         return products.filter(product => product.inventoryStatus === 'low_stock');
     }
-    
+
     static getOutOfStockProducts() {
         const products = this.getProducts();
         return products.filter(product => product.inventoryStatus === 'out_of_stock');
     }
-    
+
     static getTotalStockValue() {
         const products = this.getProducts();
         return products.reduce((total, product) => total + (product.price * product.stock), 0);
     }
-    
+
     static getTotalStockCount() {
         const products = this.getProducts();
         return products.reduce((total, product) => total + product.stock, 0);
     }
-    
+
     static updateProductStock(productId, quantity, type, reason, notes) {
         const products = this.getProducts();
         const productIndex = products.findIndex(p => p.id === productId);
-        
+
         if (productIndex === -1) return null;
-        
+
         const product = products[productIndex];
         const oldStock = product.stock;
         const newStock = type === 'add' ? oldStock + quantity : oldStock - quantity;
-        
+
         if (newStock < 0) {
             throw new Error('Cannot remove more stock than available');
         }
-        
+
         // Update product stock
         product.stock = newStock;
         product.status = newStock > 20 ? 'instock' : newStock > 0 ? 'lowstock' : 'outstock';
-        
+
         // Save updated products
         this.saveProducts(products);
-        
+
         // Log to inventory history
         const history = this.getInventoryHistory();
         const historyEntry = {
@@ -190,10 +193,10 @@ class StorageManager {
             timestamp: new Date().toISOString(),
             user: "Admin"
         };
-        
+
         history.unshift(historyEntry);
         this.saveInventoryHistory(history);
-        
+
         return {
             product: product,
             historyEntry: historyEntry
@@ -207,45 +210,45 @@ class InventoryManager {
         this.currentInventory = [];
         this.selectedProduct = null;
         this.updateType = 'add';
-        
+
         this.initializeElements();
         this.bindEvents();
         this.initializePage();
     }
-    
+
     initializeElements() {
         // Sidebar elements
         this.sidebar = document.getElementById('sidebar');
         this.openSidebarBtn = document.getElementById('openSidebar');
         this.closeSidebarBtn = document.getElementById('closeSidebar');
         this.sidebarOverlay = document.getElementById('sidebarOverlay');
-        
+
         // Modal elements
         this.modal = document.getElementById('updateStockModal');
         this.closeModalBtn = document.getElementById('closeModal');
         this.cancelBtn = document.getElementById('cancelBtn');
         this.updateBtn = document.getElementById('updateStockBtn');
         this.lowStockReportBtn = document.getElementById('lowStockReport');
-        
+
         // Filter elements
         this.searchInput = document.getElementById('searchInput');
         this.stockFilter = document.getElementById('stockFilter');
         this.categoryFilter = document.getElementById('categoryFilter');
         this.inventoryTable = document.getElementById('inventoryTable');
-        
+
         // Update form elements
         this.typeAddBtn = document.getElementById('typeAdd');
         this.typeRemoveBtn = document.getElementById('typeRemove');
         this.quantityInput = document.getElementById('quantityInput');
         this.reasonSelect = document.getElementById('reasonSelect');
         this.notesInput = document.getElementById('notesInput');
-        
+
         // Product info elements
         this.productName = document.getElementById('productName');
         this.productSku = document.getElementById('productSku');
         this.currentStock = document.getElementById('currentStock');
         this.productImage = document.getElementById('productImage');
-        
+
         // Preview elements
         this.previewCurrent = document.getElementById('previewCurrent');
         this.previewQuantity = document.getElementById('previewQuantity');
@@ -253,48 +256,48 @@ class InventoryManager {
         this.previewNew = document.getElementById('previewNew');
         this.updateIcon = document.getElementById('updateIcon');
     }
-    
+
     bindEvents() {
         // Sidebar events
         this.openSidebarBtn?.addEventListener('click', () => this.openSidebar());
         this.closeSidebarBtn?.addEventListener('click', () => this.closeSidebar());
         this.sidebarOverlay?.addEventListener('click', () => this.closeSidebar());
-        
+
         // Modal events
         this.closeModalBtn?.addEventListener('click', () => this.closeModal());
         this.cancelBtn?.addEventListener('click', () => this.closeModal());
         this.updateBtn?.addEventListener('click', () => this.updateStock());
         this.lowStockReportBtn?.addEventListener('click', () => this.showLowStockReport());
-        
+
         // Filter events
         this.searchInput?.addEventListener('input', () => this.filterInventory());
         this.stockFilter?.addEventListener('change', () => this.filterInventory());
         this.categoryFilter?.addEventListener('change', () => this.filterInventory());
-        
+
         // Update type events
         this.typeAddBtn?.addEventListener('click', () => this.setUpdateType('add'));
         this.typeRemoveBtn?.addEventListener('click', () => this.setUpdateType('remove'));
-        
+
         // Preview events
         this.quantityInput?.addEventListener('input', () => this.updatePreview());
-        
+
         // Modal close on outside click
         this.modal?.addEventListener('click', (event) => {
             if (event.target === this.modal) {
                 this.closeModal();
             }
         });
-        
+
         // Close sidebar when clicking outside on mobile
         document.addEventListener('click', (event) => {
             const isClickInsideSidebar = this.sidebar?.contains(event.target);
             const isClickOnOpenBtn = this.openSidebarBtn?.contains(event.target);
-            
+
             if (!isClickInsideSidebar && !isClickOnOpenBtn && !this.sidebar?.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
                 this.closeSidebar();
             }
         });
-        
+
         // Handle escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
@@ -306,7 +309,7 @@ class InventoryManager {
                 }
             }
         });
-        
+
         // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) {
@@ -319,29 +322,29 @@ class InventoryManager {
             }
         });
     }
-    
+
     initializePage() {
         // Initialize storage
         StorageManager.initStorage();
-        
+
         // Get data from localStorage
         const products = StorageManager.getProducts();
         const categories = StorageManager.getCategories();
-        
+
         // Populate category dropdown
         this.populateCategoryDropdown(categories);
-        
+
         // Set current inventory and render
         this.currentInventory = [...products];
         this.renderInventory(this.currentInventory);
         this.updateSummaryCards();
     }
-    
+
     populateCategoryDropdown(categories) {
         if (!this.categoryFilter) return;
-        
+
         this.categoryFilter.innerHTML = '<option value="">All Categories</option>';
-        
+
         categories
             .filter(cat => cat.status === 'active')
             .forEach(category => {
@@ -351,55 +354,55 @@ class InventoryManager {
                 this.categoryFilter.appendChild(option);
             });
     }
-    
+
     openSidebar() {
         this.sidebar?.classList.remove('-translate-x-full');
         this.sidebarOverlay?.classList.remove('hidden', 'opacity-0');
         this.sidebarOverlay?.classList.add('block', 'opacity-100');
         document.body.style.overflow = 'hidden';
     }
-    
+
     closeSidebar() {
         this.sidebar?.classList.add('-translate-x-full');
         this.sidebarOverlay?.classList.remove('block', 'opacity-100');
         this.sidebarOverlay?.classList.add('hidden', 'opacity-0');
         document.body.style.overflow = '';
     }
-    
+
     openUpdateModal(product) {
         this.selectedProduct = product;
-        
+
         // Set modal title and product info
         this.productName.textContent = product.name;
         this.productSku.textContent = `SKU: ${product.sku}`;
         this.currentStock.innerHTML = `Current Stock: <span class="text-slate-900">${product.stock}</span>`;
         this.productImage.innerHTML = `<img src="${product.image}" alt="${product.name}" class="h-full w-full object-cover">`;
-        
+
         // Reset form
         this.setUpdateType('add');
         this.quantityInput.value = '';
         this.reasonSelect.value = 'restock';
         this.notesInput.value = '';
-        
+
         // Update preview
         this.updatePreview();
-        
+
         // Open modal
         this.modal?.classList.remove('hidden');
         this.modal?.classList.add('flex');
         document.body.style.overflow = 'hidden';
     }
-    
+
     closeModal() {
         this.modal?.classList.remove('flex');
         this.modal?.classList.add('hidden');
         document.body.style.overflow = '';
         this.selectedProduct = null;
     }
-    
+
     setUpdateType(type) {
         this.updateType = type;
-        
+
         if (type === 'add') {
             this.typeAddBtn?.classList.add('border-emerald-500', 'bg-emerald-500', 'text-white');
             this.typeAddBtn?.classList.remove('border-emerald-200', 'bg-emerald-50', 'text-emerald-700');
@@ -411,24 +414,25 @@ class InventoryManager {
             this.typeAddBtn?.classList.remove('border-emerald-500', 'bg-emerald-500', 'text-white');
             this.typeAddBtn?.classList.add('border-emerald-200', 'bg-emerald-50', 'text-emerald-700');
         }
-        
+
         this.updatePreview();
     }
-    
+
     renderInventory(inventoryToRender) {
         if (!this.inventoryTable) return;
-        
+
         this.inventoryTable.innerHTML = '';
-        
+
         inventoryToRender.forEach(item => {
             const statusClass = this.getStatusClass(item.inventoryStatus);
             const statusText = this.getStatusText(item.inventoryStatus);
+            const invCurrency = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('currency') : 'USD';
             const stockValue = (item.stock * item.price).toLocaleString('en-US', {
                 style: 'currency',
-                currency: 'USD'
+                currency: invCurrency
             });
             const minStock = item.minStock || 10;
-            
+
             const row = document.createElement('tr');
             row.className = 'hover:bg-slate-50 transition-colors';
             row.innerHTML = `
@@ -473,15 +477,15 @@ class InventoryManager {
             `;
             this.inventoryTable.appendChild(row);
         });
-        
+
         // Update count
         const totalProducts = StorageManager.getProducts().length;
         const inventoryCount = document.getElementById('inventoryCount');
         if (inventoryCount) {
-            inventoryCount.textContent = 
+            inventoryCount.textContent =
                 `Showing <span class="font-medium">1</span> to <span class="font-medium">${inventoryToRender.length}</span> of <span class="font-medium">${totalProducts}</span> results`;
         }
-        
+
         // Add event listeners to action buttons
         setTimeout(() => {
             document.querySelectorAll('.update-btn').forEach(btn => {
@@ -493,7 +497,7 @@ class InventoryManager {
                     }
                 });
             });
-            
+
             document.querySelectorAll('.view-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = parseInt(btn.getAttribute('data-id'));
@@ -502,107 +506,108 @@ class InventoryManager {
             });
         }, 0);
     }
-    
+
     getCategoryName(slug) {
         const categories = StorageManager.getCategories();
         const category = categories.find(c => c.slug === slug);
         return category ? category.name : slug.charAt(0).toUpperCase() + slug.slice(1);
     }
-    
+
     getStatusClass(status) {
-        switch(status) {
+        switch (status) {
             case 'in_stock': return 'bg-emerald-100 text-emerald-800 border border-emerald-200';
             case 'low_stock': return 'bg-amber-100 text-amber-800 border border-amber-200';
             case 'out_of_stock': return 'bg-rose-100 text-rose-800 border border-rose-200';
             default: return 'bg-slate-100 text-slate-800 border border-slate-200';
         }
     }
-    
+
     getStatusDotClass(status) {
-        switch(status) {
+        switch (status) {
             case 'in_stock': return 'bg-emerald-500';
             case 'low_stock': return 'bg-amber-500';
             case 'out_of_stock': return 'bg-rose-500';
             default: return 'bg-slate-500';
         }
     }
-    
+
     getStatusText(status) {
-        switch(status) {
+        switch (status) {
             case 'in_stock': return 'In Stock';
             case 'low_stock': return 'Low Stock';
             case 'out_of_stock': return 'Out of Stock';
             default: return 'Unknown';
         }
     }
-    
+
     updateSummaryCards() {
         const totalValue = StorageManager.getTotalStockValue();
         const totalItems = StorageManager.getTotalStockCount();
         const lowStockCount = StorageManager.getLowStockProducts().length;
         const outOfStockCount = StorageManager.getOutOfStockProducts().length;
-        
+
         const totalValueEl = document.getElementById('totalValue');
         const totalItemsEl = document.getElementById('totalItems');
         const lowStockCountEl = document.getElementById('lowStockCount');
         const outOfStockCountEl = document.getElementById('outOfStockCount');
-        
+
         if (totalValueEl) {
+            const sumCurrency = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('currency') : 'USD';
             totalValueEl.textContent = totalValue.toLocaleString('en-US', {
                 style: 'currency',
-                currency: 'USD',
+                currency: sumCurrency,
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             });
         }
-        
+
         if (totalItemsEl) totalItemsEl.textContent = totalItems.toLocaleString();
         if (lowStockCountEl) lowStockCountEl.textContent = lowStockCount;
         if (outOfStockCountEl) outOfStockCountEl.textContent = outOfStockCount;
     }
-    
+
     filterInventory() {
         const searchTerm = this.searchInput?.value.toLowerCase() || '';
         const stockStatus = this.stockFilter?.value || '';
         const category = this.categoryFilter?.value || '';
         const products = StorageManager.getProducts();
-        
+
         this.currentInventory = products.filter(item => {
-            const matchesSearch = item.name.toLowerCase().includes(searchTerm) || 
-                                 item.sku.toLowerCase().includes(searchTerm) ||
-                                 item.brand.toLowerCase().includes(searchTerm);
+            const matchesSearch = item.name.toLowerCase().includes(searchTerm) ||
+                item.sku.toLowerCase().includes(searchTerm) ||
+                item.brand.toLowerCase().includes(searchTerm);
             const matchesStock = !stockStatus || item.inventoryStatus === stockStatus;
             const matchesCategory = !category || item.category === category;
-            
+
             return matchesSearch && matchesStock && matchesCategory;
         });
-        
+
         this.renderInventory(this.currentInventory);
     }
-    
+
     updateStock() {
         const quantity = parseInt(this.quantityInput?.value);
         const reason = this.reasonSelect?.value;
         const notes = this.notesInput?.value.trim();
-        
+
         // Validation
         if (!quantity || quantity <= 0) {
             this.showNotification('Please enter a valid quantity', 'error');
             return;
         }
-        
+
         if (this.updateType === 'remove' && quantity > this.selectedProduct.stock) {
             this.showNotification('Cannot remove more stock than available', 'error');
             return;
         }
-        
+
         // Show loading state
         const originalIcon = this.updateIcon?.innerHTML;
         if (this.updateIcon) {
             this.updateIcon.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span>';
         }
         this.updateBtn.disabled = true;
-        
+
         try {
             // Update stock in localStorage
             const result = StorageManager.updateProductStock(
@@ -612,17 +617,17 @@ class InventoryManager {
                 reason,
                 notes
             );
-            
+
             if (result) {
                 // Update UI
                 const updatedProducts = StorageManager.getProducts();
                 this.currentInventory = [...updatedProducts];
                 this.filterInventory();
                 this.updateSummaryCards();
-                
+
                 // Close modal
                 this.closeModal();
-                
+
                 // Show success notification
                 this.showNotification(`Stock ${this.updateType === 'add' ? 'added' : 'removed'} successfully!`);
             }
@@ -636,13 +641,13 @@ class InventoryManager {
             this.updateBtn.disabled = false;
         }
     }
-    
+
     updatePreview() {
         if (!this.selectedProduct) return;
-        
+
         const quantity = parseInt(this.quantityInput?.value) || 0;
         const current = this.selectedProduct.stock;
-        
+
         if (this.previewCurrent) this.previewCurrent.textContent = current;
         if (this.previewQuantity) {
             this.previewQuantity.textContent = this.updateType === 'add' ? `+${quantity}` : `-${quantity}`;
@@ -651,18 +656,18 @@ class InventoryManager {
         if (this.previewTypeLabel) {
             this.previewTypeLabel.textContent = this.updateType === 'add' ? 'Adding:' : 'Removing:';
         }
-        
+
         const newStock = this.updateType === 'add' ? current + quantity : current - quantity;
         if (this.previewNew) this.previewNew.textContent = newStock;
     }
-    
+
     showHistory(productId) {
         const product = this.currentInventory.find(p => p.id === productId);
         if (!product) return;
-        
+
         const history = StorageManager.getInventoryHistory();
         const productHistory = history.filter(h => h.productId === productId);
-        
+
         // Create modal for history
         const historyModal = document.createElement('div');
         historyModal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in modal-overlay';
@@ -732,16 +737,16 @@ class InventoryManager {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(historyModal);
         document.body.style.overflow = 'hidden';
-        
+
         // Add close event
         historyModal.querySelector('.close-history-modal').addEventListener('click', () => {
             historyModal.remove();
             document.body.style.overflow = '';
         });
-        
+
         // Close when clicking outside
         historyModal.addEventListener('click', (e) => {
             if (e.target === historyModal) {
@@ -750,12 +755,12 @@ class InventoryManager {
             }
         });
     }
-    
+
     showLowStockReport() {
         const lowStockProducts = StorageManager.getLowStockProducts();
         const outOfStockProducts = StorageManager.getOutOfStockProducts();
         const allLowStock = [...lowStockProducts, ...outOfStockProducts];
-        
+
         // Create report modal
         const reportModal = document.createElement('div');
         reportModal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in modal-overlay';
@@ -799,10 +804,10 @@ class InventoryManager {
                                 </thead>
                                 <tbody class="divide-y divide-slate-200">
                                     ${allLowStock.map(item => {
-                                        const minStock = item.minStock || 10;
-                                        const difference = minStock - item.stock;
-                                        const actionNeeded = item.inventoryStatus === 'out_of_stock' ? 'URGENT: Restock immediately' : `Restock ${difference} units`;
-                                        return `
+            const minStock = item.minStock || 10;
+            const difference = minStock - item.stock;
+            const actionNeeded = item.inventoryStatus === 'out_of_stock' ? 'URGENT: Restock immediately' : `Restock ${difference} units`;
+            return `
                                             <tr class="hover:bg-slate-50">
                                                 <td class="px-4 py-3">
                                                     <div class="flex items-center">
@@ -828,7 +833,7 @@ class InventoryManager {
                                                 </td>
                                             </tr>
                                         `;
-                                    }).join('')}
+        }).join('')}
                                 </tbody>
                             </table>
                         </div>
@@ -849,34 +854,34 @@ class InventoryManager {
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(reportModal);
         document.body.style.overflow = 'hidden';
-        
+
         // Add event listeners
         reportModal.querySelector('.close-report-modal').addEventListener('click', () => {
             reportModal.remove();
             document.body.style.overflow = '';
         });
-        
+
         reportModal.querySelector('.print-report').addEventListener('click', () => {
             window.print();
         });
-        
+
         reportModal.querySelector('.export-report').addEventListener('click', () => {
             // Simulate export
             const btn = reportModal.querySelector('.export-report');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> Exporting...';
             btn.disabled = true;
-            
+
             setTimeout(() => {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 this.showNotification('Report exported successfully!');
             }, 1500);
         });
-        
+
         // Close when clicking outside
         reportModal.addEventListener('click', (e) => {
             if (e.target === reportModal) {
@@ -885,7 +890,7 @@ class InventoryManager {
             }
         });
     }
-    
+
     showNotification(message, type = 'success') {
         // Create notification element
         const notification = document.createElement('div');
@@ -896,9 +901,9 @@ class InventoryManager {
                 <span>${message}</span>
             </div>
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         // Remove notification after 3 seconds
         setTimeout(() => {
             notification.remove();
@@ -907,6 +912,6 @@ class InventoryManager {
 }
 
 // Initialize Inventory Manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const inventoryManager = new InventoryManager();
 });

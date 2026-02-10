@@ -224,7 +224,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         static getLowStockProducts() {
             const products = this.getProducts();
-            return products.filter(product => product.stock <= 10 && product.stock > 0);
+            const threshold = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('lowStockThreshold') : 10;
+            return products.filter(product => product.stock <= threshold && product.stock > 0);
         }
 
         static getOutOfStockProducts() {
@@ -398,9 +399,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         categoryRevenue.forEach((category, index) => {
             const color = colors[index] || 'bg-slate-500';
+            const settingsCurrency = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('currency') : 'USD';
             const revenueFormatted = new Intl.NumberFormat('en-US', {
                 style: 'currency',
-                currency: 'USD',
+                currency: settingsCurrency,
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(category.revenue);
@@ -546,9 +548,10 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('lowStockCount').textContent = lowStockProducts.length.toString();
 
         // Update total revenue (based on stock value)
+        const dashCurrency = (typeof SettingsManager !== 'undefined') ? SettingsManager.getSetting('currency') : 'USD';
         const formattedValue = new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'USD',
+            currency: dashCurrency,
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
         }).format(totalStockValue);
