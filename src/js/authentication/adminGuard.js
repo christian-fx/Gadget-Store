@@ -2,13 +2,12 @@
 class AdminGuard {
   constructor() {
     this.storageKeys = {
-      IS_LOGGED_IN: 'gadgetstore_is_logged_in',
-      CURRENT_USER: 'gadgetstore_current_user',
-      REMEMBER_ME: 'gadgetstore_remember_me',
-      LAST_ACTIVITY: 'gadgetstore_last_activity'
+      IS_LOGGED_IN: 'gadget_is_logged_in',
+      CURRENT_USER: 'gadget_user',
+      REMEMBER_ME: 'gadget_remember_me'
     };
 
-    this.adminPages = ['dashboard.html', 'product.html', 'categories.html', 'inventory.html', 'orders.html', 'settings.html', 'customer.html'];
+    this.adminPages = ['dashboard.html', 'products.html', 'categories.html', 'inventory.html', 'orders.html', 'settings.html', 'customer.html'];
     this.currentPage = window.location.pathname.split('/').pop();
 
     this.init();
@@ -17,7 +16,6 @@ class AdminGuard {
   init() {
     this.checkAuthentication();
     this.checkAdminAccess();
-    this.setupActivityTracking();
     this.setupLogout();
   }
 
@@ -29,7 +27,7 @@ class AdminGuard {
     if (!isLoggedIn || !currentUser) {
       // Redirect to login page with redirect parameter
       const redirect = encodeURIComponent(this.currentPage);
-      window.location.href = `/index.html?index=required&redirect=${redirect}`;
+      window.location.href = `/auth.html?index=required&redirect=${redirect}`;
       return;
     }
 
@@ -45,7 +43,7 @@ class AdminGuard {
 
       if (!isAdmin) {
         const redirect = encodeURIComponent(this.currentPage);
-        window.location.href = `/index.html?admin=required&redirect=${redirect}`;
+        window.location.href = `/auth.html?admin=required&redirect=${redirect}`;
         return;
       }
     }
@@ -79,93 +77,9 @@ class AdminGuard {
     });
   }
 
-  // Setup session activity tracking
-  setupActivityTracking() {
-    // Update last activity timestamp
-    const updateActivity = () => {
-      localStorage.setItem(this.storageKeys.LAST_ACTIVITY, new Date().getTime().toString());
-    };
+  // Session activity tracking removed to prevent login loops
 
-    // Check session timeout
-    const checkSessionTimeout = () => {
-      const lastLogin = localStorage.getItem(this.storageKeys.LAST_ACTIVITY);
-      if (lastLogin) {
-        const now = new Date().getTime();
-        const lastActivity = parseInt(lastLogin);
-        const timeout = 30 * 60 * 1000; // 30 minutes
-
-        if (now - lastActivity > timeout) {
-          // Session expired
-          this.logout();
-          window.location.href = '/index.html?session=expired';
-        }
-      }
-      updateActivity();
-    };
-
-    // Initial check
-    checkSessionTimeout();
-
-    // Update activity on user interaction
-    document.addEventListener('click', checkSessionTimeout);
-    document.addEventListener('keypress', checkSessionTimeout);
-
-    // Periodic check every minute
-    setInterval(checkSessionTimeout, 60000);
-  }
-
-  // Setup session timeout warnings
-  setupSessionTimeoutWarning() {
-    const warningTime = 5 * 60 * 1000; // 5 minutes warning
-    const totalTimeout = 30 * 60 * 1000; // 30 minutes total
-
-    setInterval(() => {
-      const lastActivity = localStorage.getItem(this.storageKeys.LAST_ACTIVITY);
-      if (lastActivity) {
-        const now = new Date().getTime();
-        const elapsed = now - parseInt(lastActivity);
-        const remaining = totalTimeout - elapsed;
-
-        if (remaining > 0 && remaining <= warningTime) {
-          this.showSessionWarning(remaining);
-        }
-      }
-    }, 60000); // Check every minute
-  }
-
-  // Show session timeout warning
-  showSessionWarning(remainingTime) {
-    const minutes = Math.floor(remainingTime / 60000);
-    const seconds = Math.floor((remainingTime % 60000) / 1000);
-
-    // Check if warning already exists
-    if (document.getElementById('sessionWarning')) return;
-
-    const warning = document.createElement('div');
-    warning.id = 'sessionWarning';
-    warning.className = 'fixed bottom-4 right-4 bg-amber-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-md';
-    warning.innerHTML = `
-            <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined">warning</span>
-                <div>
-                    <p class="font-medium">Session Expiring Soon</p>
-                    <p class="text-sm opacity-90">Your session will expire in ${minutes}:${seconds.toString().padStart(2, '0')}</p>
-                </div>
-                <button onclick="this.closest('#sessionWarning').remove()" class="ml-4 text-white hover:text-amber-100">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-        `;
-
-    document.body.appendChild(warning);
-
-    // Auto-remove after 10 seconds
-    setTimeout(() => {
-      if (warning.parentNode) {
-        warning.remove();
-      }
-    }, 10000);
-  }
+  // Session timeout warnings removed
 
   // Setup logout functionality
   setupLogout() {
@@ -186,17 +100,17 @@ class AdminGuard {
     localStorage.setItem(this.storageKeys.REMEMBER_ME, 'false');
 
     // Redirect to login page
-    window.location.href = '/index.html?logout=true';
+    window.location.href = '/auth.html?logout=true';
   }
 
   // Check if user is logged in (static method)
   static isLoggedIn() {
-    return localStorage.getItem('gadgetstore_is_logged_in') === 'true';
+    return localStorage.getItem('gadget_is_logged_in') === 'true';
   }
 
   // Get current user (static method)
   static getCurrentUser() {
-    return JSON.parse(localStorage.getItem('gadgetstore_current_user') || 'null');
+    return JSON.parse(localStorage.getItem('gadget_user') || 'null');
   }
 
   // Check if current user is admin (static method)
@@ -209,9 +123,6 @@ class AdminGuard {
 // Initialize admin guard when page loads
 document.addEventListener('DOMContentLoaded', function () {
   const adminGuard = new AdminGuard();
-
-  // Optional: Setup session timeout warnings
-  adminGuard.setupSessionTimeoutWarning();
 
   // Make AdminGuard available globally
   window.AdminGuard = AdminGuard;

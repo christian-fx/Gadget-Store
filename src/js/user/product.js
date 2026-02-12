@@ -4,8 +4,8 @@
  */
 (() => {
     // ─── Full Product Catalog ──────────────────────────────────────────
-    // PRODUCTS are now loaded from src/js/data.js
-
+    // PRODUCTS are loaded from src/js/data.js via window.PRODUCTS
+    function getProducts() { return window.PRODUCTS || {}; }
     // Default fallback product
     const DEFAULT = {
         id: 0, name: 'Premium Gadget', subtitle: 'Amazing Technology', category: 'Electronics', badge: 'New', price: 499,
@@ -19,7 +19,7 @@
     // ─── Get product by URL param ─────────────────────────────────────
     const params = new URLSearchParams(window.location.search);
     const productId = parseInt(params.get('id')) || 10;
-    const product = PRODUCTS[productId] || DEFAULT;
+    const product = getProducts()[productId] || DEFAULT;
 
     let selectedModel = product.models ? product.models[0] : null;
     let selectedColor = product.colors[0];
@@ -195,6 +195,53 @@
                 }
             }
         }
+    }
+
+    // ─── Wishlist ──────────────────────────────────────────────────────
+    function updateWishlistUI() {
+        const wishlistBtn = $('wishlistBtn');
+        if (!wishlistBtn) return;
+
+        const user = JSON.parse(localStorage.getItem('gadget_user'));
+        if (!user) return;
+
+        const wishlist = JSON.parse(localStorage.getItem('gadget_wishlist') || '[]');
+        const isInWishlist = wishlist.some(item => item.userId === user.id && item.productId === product.id);
+
+        const icon = wishlistBtn.querySelector('.material-symbols-outlined');
+        if (isInWishlist) {
+            wishlistBtn.classList.add('text-red-500', 'bg-red-50', 'border-red-200');
+            wishlistBtn.classList.remove('text-slate-400');
+            if (icon) icon.style.fontVariationSettings = "'FILL' 1";
+        } else {
+            wishlistBtn.classList.remove('text-red-500', 'bg-red-50', 'border-red-200');
+            wishlistBtn.classList.add('text-slate-400');
+            if (icon) icon.style.fontVariationSettings = "'FILL' 0";
+        }
+    }
+
+    // Wishlist toggle
+    const wishlistBtn = $('wishlistBtn');
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', () => {
+            const user = JSON.parse(localStorage.getItem('gadget_user'));
+            if (!user) {
+                window.location.href = '/auth.html';
+                return;
+            }
+
+            let wishlist = JSON.parse(localStorage.getItem('gadget_wishlist') || '[]');
+            const existingIndex = wishlist.findIndex(item => item.userId === user.id && item.productId === product.id);
+
+            if (existingIndex > -1) {
+                wishlist.splice(existingIndex, 1);
+            } else {
+                wishlist.push({ userId: user.id, productId: product.id, date: new Date().toISOString() });
+            }
+
+            localStorage.setItem('gadget_wishlist', JSON.stringify(wishlist));
+            updateWishlistUI();
+        });
     }
 
     $('addToBagBtn').addEventListener('click', () => {

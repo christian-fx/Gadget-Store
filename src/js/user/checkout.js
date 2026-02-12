@@ -36,7 +36,30 @@
 
     const user = getUser();
     if (!user) {
-        window.location.href = '/index.html';
+        // Show sign-in prompt modal instead of redirecting
+        const main = document.querySelector('main');
+        if (main) {
+            main.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 text-center">
+                    <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-primary text-[40px]">lock</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Sign in to Checkout</h2>
+                    <p class="text-slate-500 max-w-md mb-8">Create a free account or sign in to complete your purchase. Your cart items will be waiting for you.</p>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="/auth.html" class="px-8 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-blue-600 transition-colors shadow-lg shadow-primary/25">
+                            Sign In
+                        </a>
+                        <a href="/auth.html" class="px-8 py-3 border-2 border-slate-200 text-slate-700 rounded-xl font-semibold hover:border-primary hover:text-primary transition-colors">
+                            Create Account
+                        </a>
+                    </div>
+                    <a href="store.html" class="mt-6 text-sm text-slate-400 hover:text-primary transition-colors">
+                        ← Continue Shopping
+                    </a>
+                </div>
+            `;
+        }
         return;
     }
 

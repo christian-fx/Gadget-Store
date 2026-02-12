@@ -69,35 +69,11 @@ class AuthService {
     // Check for existing valid session
     checkExistingSession() {
         const isLoggedIn = localStorage.getItem(AUTH_CONFIG.STORAGE_KEYS.IS_LOGGED_IN) === 'true';
-        const rememberMe = localStorage.getItem(AUTH_CONFIG.STORAGE_KEYS.REMEMBER_ME) === 'true';
         const currentUser = this.getCurrentUser();
 
-        if (isLoggedIn && currentUser && rememberMe) {
-            // Check if session is still valid
-            const lastLogin = new Date(currentUser.lastLogin);
-            const now = new Date();
-            const minutesDiff = (now - lastLogin) / (1000 * 60);
-
-            if (minutesDiff < AUTH_CONFIG.REMEMBER_ME_TIMEOUT) {
-                // Session is valid, redirect to dashboard
-                this.redirectToDashboard(currentUser);
-            } else {
-                // Session expired, log out
-                this.logout();
-            }
-        } else if (isLoggedIn && currentUser) {
-            // Normal session (no remember me)
-            const lastLogin = new Date(currentUser.lastLogin);
-            const now = new Date();
-            const minutesDiff = (now - lastLogin) / (1000 * 60);
-
-            if (minutesDiff < AUTH_CONFIG.SESSION_TIMEOUT) {
-                // Session is valid, redirect to dashboard
-                this.redirectToDashboard(currentUser);
-            } else {
-                // Session expired, log out
-                this.logout();
-            }
+        if (isLoggedIn && currentUser) {
+            // User is logged in, redirect to their dashboard
+            this.redirectToDashboard(currentUser);
         }
     }
 
@@ -212,7 +188,7 @@ class AuthService {
                         message: "Login successful!",
                         user: user,
                         isAdmin: user.userType === 'staff' || user.role === 'admin',
-                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/public/users/store.html"
+                        redirectTo: user.userType === 'staff' ? "/public/admin/dashboard.html" : "/"
                     });
                 }
             }, 1000); // Simulate 1 second delay
@@ -288,7 +264,7 @@ class AuthService {
         localStorage.setItem(AUTH_CONFIG.STORAGE_KEYS.REMEMBER_ME, 'false');
 
         // Redirect to login page
-        window.location.href = "/index.html";
+        window.location.href = "/auth.html";
     }
 
     // Check if user is authenticated
@@ -307,7 +283,7 @@ class AuthService {
         if (user.role === 'admin' || user.role === 'super_admin' || user.userType === 'staff') {
             window.location.href = "/public/admin/dashboard.html";
         } else {
-            window.location.href = "/public/users/store.html";
+            window.location.href = "/";
         }
     }
 

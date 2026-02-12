@@ -11,7 +11,7 @@
     // ─── Auth Guard ───────────────────────────────────────────────────
     let user = JSON.parse(localStorage.getItem(USER_KEY));
     if (!user) {
-        window.location.href = '/index.html';
+        window.location.href = '/auth.html';
         return;
     }
 
@@ -455,7 +455,7 @@
     $('signOutBtn').addEventListener('click', () => {
         localStorage.removeItem(USER_KEY);
         localStorage.setItem('gadget_is_logged_in', 'false');
-        window.location.href = '/index.html';
+        window.location.href = '/auth.html';
     });
 
     // ─── Render Reviews ───────────────────────────────────────────────
@@ -573,6 +573,57 @@
         }).join('');
     }
 
+    // ─── Render Overview Stats ────────────────────────────────────────
+    function renderOverview() {
+        const orders = JSON.parse(localStorage.getItem('gadget_orders') || '[]').filter(o => o.userId === user.id);
+        const wishlist = JSON.parse(localStorage.getItem('gadget_wishlist') || '[]').filter(w => w.userId === user.id);
+        const reviews = JSON.parse(localStorage.getItem('gadget_reviews') || '[]').filter(r => r.userId === user.id);
+
+        const orderCount = $('overviewOrderCount');
+        const wishlistCount = $('overviewWishlistCount');
+        const reviewCount = $('overviewReviewCount');
+
+        if (orderCount) orderCount.textContent = orders.length;
+        if (wishlistCount) wishlistCount.textContent = wishlist.length;
+        if (reviewCount) reviewCount.textContent = reviews.length;
+
+        // Populate activity from real data
+        const activityEl = $('overviewActivity');
+        if (activityEl) {
+            const activities = [
+                ...orders.map(o => ({ type: 'order', date: new Date(o.createdAt), data: o })),
+                ...reviews.map(r => ({ type: 'review', date: new Date(r.date), data: r }))
+            ].sort((a, b) => b.date - a.date).slice(0, 3);
+
+            if (activities.length === 0) {
+                activityEl.innerHTML = '<p class="text-sm text-slate-400">No recent activity</p>';
+            } else {
+                activityEl.innerHTML = activities.map(act => {
+                    const timeAgo = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(
+                        Math.ceil((act.date - new Date()) / (1000 * 60 * 60 * 24)), 'day'
+                    );
+                    if (act.type === 'order') {
+                        return `<div class="flex items-center gap-3 text-sm">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-[16px]">shopping_bag</span>
+                            </div>
+                            <div class="flex-1"><span class="font-medium">Order #${act.data.id || ''}</span> placed</div>
+                            <span class="text-slate-400 text-xs">${timeAgo}</span>
+                        </div>`;
+                    } else {
+                        return `<div class="flex items-center gap-3 text-sm">
+                            <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-amber-600 text-[16px]">star</span>
+                            </div>
+                            <div class="flex-1">You reviewed a product</div>
+                            <span class="text-slate-400 text-xs">${timeAgo}</span>
+                        </div>`;
+                    }
+                }).join('');
+            }
+        }
+    }
+
     // Initializes
     renderProfile();
     renderAddresses();
@@ -580,6 +631,7 @@
     renderOrders();
     renderWishlist();
     renderRecentActivity();
+    renderOverview();
 
     // Make global for onclick handlers if needed (but currently we don't use inline onclicks that call these)
     // window.renderWishlist = renderWishlist; 

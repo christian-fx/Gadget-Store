@@ -24,12 +24,24 @@
     </script>
 </head>
 
-<body class="font-display text-slate-900 bg-white min-h-screen flex flex-col">
+<body class="font-display text-slate-900 bg-white min-h-screen flex flex-col" style="visibility: hidden;">
 
-    <!-- Header -->
+    <!-- Immediate auth guard: redirect guests before any content renders -->
+    <script>
+            (function () {
+                var isLoggedIn = localStorage.getItem('gadget_is_logged_in') === 'true';
+                var user = null;
+                try { user = JSON.parse(localStorage.getItem('gadget_user')); } catch (e) { }
+                if (!isLoggedIn || !user) {
+                    window.location.replace('/auth.html');
+                } else {
+                    document.body.style.visibility = 'visible';
+                }
+            })();
+    </script>
     <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
-            <a href="/index.html" class="flex items-center gap-2 text-primary font-bold text-lg">
+            <a href="/public/users/store.html" class="flex items-center gap-2 text-primary font-bold text-lg">
                 <span class="material-symbols-outlined text-[24px]">bolt</span>
                 Go Gadgets
             </a>
@@ -54,10 +66,14 @@
                     <span id="cartBadge"
                         class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full items-center justify-center">0</span>
                 </a>
-                <a href="account.html"
-                    class="w-8 h-8 rounded-full bg-primary/10 overflow-hidden flex items-center justify-center ring-2 ring-primary">
+                <a id="authAccountLink" href="account.html"
+                    class="hidden w-8 h-8 rounded-full bg-primary/10 overflow-hidden items-center justify-center ring-2 ring-primary">
                     <span class="material-symbols-outlined text-primary text-[20px]">person</span>
                 </a>
+                <button id="mobileMenuBtn"
+                    class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">menu</span>
+                </button>
             </div>
         </div>
     </header>
@@ -71,8 +87,8 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Sidebar -->
-            <aside class="w-full md:w-48 flex-shrink-0">
+            <!-- Sidebar (hidden on mobile — use mobile menu instead) -->
+            <aside class="hidden md:block w-full md:w-48 flex-shrink-0">
                 <nav class="space-y-1" id="accountNav">
                     <a href="#overview" data-tab="overview"
                         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors">
@@ -123,8 +139,8 @@
                                     <span class="material-symbols-outlined text-slate-400 text-[36px]">person</span>
                                 </div>
                                 <div>
-                                    <h3 id="displayName" class="text-base font-bold text-slate-900">Alex Chen</h3>
-                                    <p id="displayEmail" class="text-sm text-slate-500">alex.chen@example.com</p>
+                                    <h3 id="displayName" class="text-base font-bold text-slate-900"></h3>
+                                    <p id="displayEmail" class="text-sm text-slate-500"></p>
                                     <button class="text-xs text-primary hover:underline font-medium mt-1">Change
                                         Avatar</button>
                                 </div>
@@ -134,24 +150,24 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">First Name</label>
-                                    <input type="text" id="firstName" value="Alex" disabled
+                                    <input type="text" id="firstName" value="" disabled
                                         class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
-                                    <input type="text" id="lastName" value="Chen" disabled
+                                    <input type="text" id="lastName" value="" disabled
                                         class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
                                 </div>
                             </div>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Email Address</label>
-                                    <input type="email" id="emailField" value="alex.chen@example.com" disabled
+                                    <input type="email" id="emailField" value="" disabled
                                         class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-1.5">Phone Number</label>
-                                    <input type="tel" id="phoneField" value="+1 (555) 123-4567" disabled
+                                    <input type="tel" id="phoneField" value="" disabled
                                         class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm bg-slate-50 focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary/30 disabled:bg-slate-100 disabled:text-slate-500" />
                                 </div>
                             </div>
@@ -207,7 +223,7 @@
                                 </div>
                                 <span class="text-sm text-slate-500">Total Orders</span>
                             </div>
-                            <p class="text-2xl font-bold text-slate-900">12</p>
+                            <p id="overviewOrderCount" class="text-2xl font-bold text-slate-900">0</p>
                         </div>
                         <div class="bg-white border border-slate-200 rounded-2xl p-5">
                             <div class="flex items-center gap-3 mb-3">
@@ -216,7 +232,7 @@
                                 </div>
                                 <span class="text-sm text-slate-500">Wishlist Items</span>
                             </div>
-                            <p class="text-2xl font-bold text-slate-900">4</p>
+                            <p id="overviewWishlistCount" class="text-2xl font-bold text-slate-900">0</p>
                         </div>
                         <div class="bg-white border border-slate-200 rounded-2xl p-5">
                             <div class="flex items-center gap-3 mb-3">
@@ -225,37 +241,13 @@
                                 </div>
                                 <span class="text-sm text-slate-500">Reviews Given</span>
                             </div>
-                            <p class="text-2xl font-bold text-slate-900">7</p>
+                            <p id="overviewReviewCount" class="text-2xl font-bold text-slate-900">0</p>
                         </div>
                     </div>
                     <div class="bg-white border border-slate-200 rounded-2xl p-6">
                         <h3 class="font-bold text-slate-900 mb-4">Recent Activity</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center gap-3 text-sm">
-                                <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
-                                    <span
-                                        class="material-symbols-outlined text-emerald-600 text-[16px]">check_circle</span>
-                                </div>
-                                <div class="flex-1"><span class="font-medium">Order #1089</span> delivered successfully
-                                </div>
-                                <span class="text-slate-400 text-xs">2 days ago</span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm">
-                                <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <span
-                                        class="material-symbols-outlined text-primary text-[16px]">local_shipping</span>
-                                </div>
-                                <div class="flex-1"><span class="font-medium">Order #1092</span> is in transit</div>
-                                <span class="text-slate-400 text-xs">1 day ago</span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm">
-                                <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-amber-600 text-[16px]">star</span>
-                                </div>
-                                <div class="flex-1">You reviewed <span class="font-medium">SonicPro X1 Headphones</span>
-                                </div>
-                                <span class="text-slate-400 text-xs">5 days ago</span>
-                            </div>
+                        <div id="overviewActivity" class="space-y-4">
+                            <p class="text-sm text-slate-400">No recent activity</p>
                         </div>
                     </div>
                 </div>
@@ -502,9 +494,10 @@
         </div>
     </div>
 
-    <script src="/src/js/user/header.js"></script>
-    <script src="/src/js/data.js"></script>
-    <script src="/src/js/user/account.js"></script>
+
+    <script type="module" src="/src/js/user/header.js"></script>
+    <script type="module" src="/src/js/data.js"></script>
+    <script type="module" src="/src/js/user/account.js"></script>
 </body>
 
 </html>

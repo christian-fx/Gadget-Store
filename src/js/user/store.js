@@ -4,8 +4,9 @@
  */
 (() => {
     // ─── Product Catalog (24 products for multi-page display) ────────
-    // PRODUCTS are now loaded from src/js/data.js
-
+    // PRODUCTS are loaded from src/js/data.js via window.PRODUCTS
+    // Use a function to always get the latest reference
+    function getProducts() { return window.PRODUCTS || {}; }
     const PAGE_SIZE = 12;
     let currentPage = 1;
 
@@ -38,7 +39,7 @@
     const availabilityChecks = document.querySelectorAll('input[name="availability"]');
 
     function getFiltered() {
-        let products = Object.values(PRODUCTS);
+        let products = Object.values(getProducts());
 
         // Category filter
         const allCheck = document.querySelector('#categoryFilters input[value="all"]');
@@ -87,7 +88,8 @@
 
     // ─── Render Card ──────────────────────────────────────────────────
     function renderCard(p) {
-        const stockBadge = !p.inStock ? '<span class="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-[10px] font-bold uppercase rounded tracking-wider">Out of Stock</span>' : '';
+        const isInStock = p.inStock !== false; // Default to true if field is missing
+        const stockBadge = !isInStock ? '<span class="absolute top-3 right-3 px-2 py-1 bg-red-500 text-white text-[10px] font-bold uppercase rounded tracking-wider">Out of Stock</span>' : '';
 
         // Wishlist State
         const wishlist = JSON.parse(localStorage.getItem('gadget_wishlist') || '[]');
@@ -126,7 +128,7 @@
                     <span class="text-base font-bold text-slate-900">$${p.price.toLocaleString()}</span>
                     <button onclick="addToCart(${p.id})"
                         class="w-8 h-8 rounded-lg bg-primary/10 text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-all"
-                        ${!p.inStock ? 'disabled' : ''}>
+                        ${!isInStock ? 'disabled' : ''}>
                         <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                     </button>
                 </div>
@@ -258,8 +260,8 @@
     }
 
     window.addToCart = function (id) {
-        const product = PRODUCTS[id]; // Fixed: Access by ID directly
-        if (!product) return; // Removed inStock check here to allow trying (button disabled anyway) or we can keep it
+        const product = getProducts()[id];
+        if (!product) return;
 
         const cart = getCart();
         const existing = cart.find(i => i.id === id);
@@ -286,7 +288,7 @@
     window.toggleWishlist = function (id, btn) {
         const user = JSON.parse(localStorage.getItem('gadget_user'));
         if (!user) {
-            window.location.href = '/index.html';
+            window.location.href = '/auth.html';
             return;
         }
 

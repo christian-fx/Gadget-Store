@@ -8,7 +8,8 @@ export default defineConfig({
     outDir: 'dist',  // Output directory for builds
     rollupOptions: {
       input: {
-        index: resolve(__dirname, '/index.html'),
+        index: resolve(__dirname, 'index.html'),
+        auth: resolve(__dirname, 'auth.html'),
         categories: resolve(__dirname, 'public/admin/categories.html'),
         customer: resolve(__dirname, 'public/admin/customer.html'),
         dashboard: resolve(__dirname, 'public/admin/dashboard.html'),
@@ -17,18 +18,19 @@ export default defineConfig({
         products: resolve(__dirname, 'public/admin/products.html'),
         settings: resolve(__dirname, 'public/admin/settings.html'),
         // User pages
-        store: resolve(__dirname, 'public/users/store.html'),
         product: resolve(__dirname, 'public/users/product.html'),
         cart: resolve(__dirname, 'public/users/cart.html'),
         checkout: resolve(__dirname, 'public/users/checkout.html'),
         account: resolve(__dirname, 'public/users/account.html'),
         receipt: resolve(__dirname, 'public/users/receipt.html'),
         tracking: resolve(__dirname, 'public/users/tracking.html'),
+        login: resolve(__dirname, 'public/users/login.html'),
+        signup: resolve(__dirname, 'public/users/signup.html'),
       },
     },
   },
   server: {
-    open: '/public/users/store.html',  // Opens store.html on dev server start
+    open: '/',  // Opens store (index.html) on dev server start
   },
   resolve: {
     alias: {

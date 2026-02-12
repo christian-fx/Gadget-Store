@@ -1,7 +1,7 @@
 /**
  * Go Gadgets — Shared Product Data
  */
-const PRODUCTS = {
+window.PRODUCTS = {
     1: {
         id: 1, name: 'SonicPro X1 Noise Cancelling Headphones', subtitle: 'Immersive Sound',
         category: 'Audio', badge: 'New', price: 299,

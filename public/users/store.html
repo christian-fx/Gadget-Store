@@ -47,7 +47,7 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
-            <a href="/index.html" class="flex items-center gap-2 text-primary font-bold text-lg">
+            <a href="/public/users/store.html" class="flex items-center gap-2 text-primary font-bold text-lg">
                 <span class="material-symbols-outlined text-[24px]">bolt</span>
                 Go Gadgets
             </a>
@@ -71,10 +71,14 @@
                     <span id="cartBadge"
                         class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
                 </a>
-                <a href="account.html"
-                    class="w-8 h-8 rounded-full bg-slate-200 overflow-hidden flex items-center justify-center">
+                <a id="authAccountLink" href="account.html"
+                    class="hidden w-8 h-8 rounded-full bg-slate-200 overflow-hidden items-center justify-center">
                     <span class="material-symbols-outlined text-slate-500 text-[20px]">person</span>
                 </a>
+                <button id="mobileMenuBtn"
+                    class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                    <span class="material-symbols-outlined text-[22px]">menu</span>
+                </button>
             </div>
         </div>
     </header>
@@ -83,7 +87,7 @@
     <main class="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8">
         <!-- Breadcrumb -->
         <div class="flex items-center gap-2 text-sm text-slate-500 mb-6">
-            <a href="/index.html" class="hover:text-primary transition-colors">Home</a>
+            <a href="/public/users/store.html" class="hover:text-primary transition-colors">Home</a>
             <span>›</span>
             <span class="text-slate-900 font-medium">Store</span>
         </div>
@@ -229,49 +233,12 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 mt-16">
-        <div class="max-w-7xl mx-auto px-4 md:px-8 py-12">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-                <div>
-                    <h4 class="font-bold text-slate-900 mb-4">Go Gadgets</h4>
-                    <p class="text-sm text-slate-500 leading-relaxed">Your one-stop destination for the latest tech,
-                        smart home devices, and premium electronics.</p>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-slate-900 mb-4">Shop</h4>
-                    <ul class="space-y-2.5 text-sm text-primary">
-                        <li><a href="#" class="hover:underline">All Products</a></li>
-                        <li><a href="#" class="hover:underline">Featured</a></li>
-                        <li><a href="#" class="hover:underline">New Arrivals</a></li>
-                        <li><a href="#" class="hover:underline">Deals</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-slate-900 mb-4">Support</h4>
-                    <ul class="space-y-2.5 text-sm text-primary">
-                        <li><a href="#" class="hover:underline">Help Center</a></li>
-                        <li><a href="#" class="hover:underline">Returns</a></li>
-                        <li><a href="#" class="hover:underline">Shipping Info</a></li>
-                        <li><a href="#" class="hover:underline">Contact Us</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-semibold text-slate-900 mb-4">Company</h4>
-                    <ul class="space-y-2.5 text-sm text-primary">
-                        <li><a href="#" class="hover:underline">About</a></li>
-                        <li><a href="#" class="hover:underline">Blog</a></li>
-                        <li><a href="#" class="hover:underline">Careers</a></li>
-                        <li><a href="#" class="hover:underline">Privacy</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <footer id="appFooter"></footer>
 
-    <script src="/src/js/user/header.js"></script>
-    <script src="/src/js/data.js"></script>
-    <script src="/src/js/user/store.js"></script>
+    <script type="module" src="/src/js/user/header.js"></script>
+    <script type="module" src="/src/js/data.js"></script>
+    <script type="module" src="/src/js/user/store.js"></script>
+    <script type="module" src="/src/js/user/footer.js"></script>
 </body>
 
 </html>
