@@ -1,211 +1,119 @@
-# Gadget Admin
+# Gadget Store Admin Dashboard
 
-A comprehensive e-commerce platform for selling gadgets and electronics with a powerful admin dashboard for managing products, inventory, customers, and orders.
+A modern, responsive, and powerful admin dashboard for managing an e-commerce gadget store. Built with **Vanilla JavaScript**, **Vite**, **Tailwind CSS**, and backed by **Firebase**.
 
-## Features
+## 🚀 Features
 
-### Admin Dashboard
-- **Dashboard Overview**: Real-time insights with revenue charts and key metrics
-- **Product Management**: Add, edit, delete, and organize gadgets with detailed information
-- **Category Management**: Create and manage product categories
-- **Inventory Management**: Track stock levels, low stock alerts, and inventory history
-- **Order Management**: View and manage customer orders with status tracking
-- **Customer Management**: Monitor customer data and purchase history
-- **Settings**: Configure store settings and preferences (not configured yet!)
+### 📊 Dashboard & Analytics
+- **Real-time Overview**: Revenue charts, top-selling categories, and key business metrics.
+- **Stock Alerts**: Instant visibility into low-stock and out-of-stock items.
 
-### Core Functionalities
--  **Authentication**: Secure user authentication with Firebase
--  **Product Management**: Complete CRUD operations for products
--  **Analytics**: Revenue charts and sales analytics
--  **Inventory Tracking**: Real-time stock management
--  **Customer Database**: Customer information and order history
--  **Responsive Design**: Mobile-friendly interface
--  **Cloud Storage**: Integration with Cloudinary for image uploads
+### 📦 Product Management
+- **Full CRUD**: Create, Read, Update, and Delete products.
+- **Image Uploads**: Seamless integration with **Cloudinary** for product images.
+- **Rich Details**: Manage pricing, stock, SKUs, and categories.
+- **Search & Filter**: Quickly find products by name, SKU, or category.
 
-## Tech Stack
+### 📂 Category Management
+- **Organization**: Create and manage product categories.
+- **Automation**: Auto-generated slugs and icon suggestions based on category names.
+- **Visuals**: Material Symbols integration for category icons.
 
-### Frontend
-- **HTML5**: Semantic markup
-- **CSS3 & Tailwind CSS**: Modern styling and responsive design
-- **JavaScript (Vanilla)**: Interactive features and DOM manipulation
-- **Chart.js**: Data visualization for analytics
+### 🏭 Inventory Control
+- **Stock Adjustments**: easy-to-use interface for restocking or correcting inventory counts.
+- **Status Tracking**: Visual indicators for "In Stock", "Low Stock", and "Out of Stock".
+- **Valuation**: Real-time calculation of total inventory value.
 
-### Backend & Services (Coming Soon!!)
-- **Firebase**: Authentication and real-time database
-- **Firestore**: Cloud database for storing products, orders, and customer data
-- **Cloudinary**: Cloud-based image management and optimization
+### 🛒 Order Management
+- **Order Tracking**: Monitor customer orders from "Pending" to "Delivered".
+- **Status Updates**: Quickly update order statuses to keep customers informed.
 
-## Project Structure
+### 📱 Mobile Responsive
+- **Mobile-First Design**: Fully functional on smartphones and tablets.
+- **Collapsible Sidebar**: Smooth navigation on smaller screens.
 
-```
-Gadget Store/
-├── public/
-│   ├── index.html              # Authentication page
-│   └── admin/
-│       ├── dashboard.html      # Admin dashboard
-│       ├── products.html       # Product management
-│       ├── categories.html     # Category management
-│       ├── customer.html       # Customer management
-│       ├── orders.html         # Order management
-│       ├── inventory.html      # Inventory management
-│       └── settings.html       # Settings page
-├── src/
-│   └── js/
-│       ├── auth.js            # Authentication logic
-│       ├── auth-guard.js       # Route protection
-│       ├── services.js/        # Business logic services
-│       │   ├── adminAuthService.js
-│       │   ├── productService.js
-│       │   ├── categoryService.js
-│       │   ├── customerService.js
-│       │   ├── inventoryService.js
-│       │   └── cloudinaryService.js
-│       ├── firebase/           # Firebase configuration
-│       │   ├── config.js
-│       │   ├── auth.js
-│       │   └── firestore.js
-│       └── admin/             # Admin-specific modules
-│           ├── adminGuard.js
-│           ├── dashboard.js
-│           ├── products.js
-│           ├── categories.js
-│           ├── customer.js
-│           ├── orders.js
-│           ├── inventory.js
-│           └── settings.js
-└── README.md
-```
+## 🛠️ Tech Stack
 
-## Installation
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES Modules)
+- **Styling**: Tailwind CSS v4 (PostCSS)
+- **Build Tool**: Vite
+- **Backend (BaaS)**: Firebase (Firestore, Auth)
+- **Image Storage**: Cloudinary
+- **Icons**: Material Symbols (Google Fonts)
+- **Fonts**: Inter (Google Fonts)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd gadget-store
-   ```
+## ⚙️ Setup & Installation
 
-2. **Install dependencies** (if using npm)
-   ```bash
-   npm install
-   ```
+Follow these steps to set up the project locally.
 
-3. **Configure Firebase**
-   - Create a Firebase project at [firebase.google.com](https://firebase.google.com)
-   - Add your Firebase configuration to `src/js/firebase/config.js`
-   - Enable Authentication (Email/Password)
-   - Create a Firestore database
-
-4. **Configure Cloudinary**
-   - Sign up at [cloudinary.com](https://cloudinary.com)
-   - Add your Cloudinary API credentials to environment variables
-
-5. **Set up environment variables**
-   - Create a `.env` file in the root directory
-   - Add required credentials (Firebase, Cloudinary)
-
-## Usage
-
-### Development
+### 1. Clone the Repository
 ```bash
-# Start a local development server
-npx http-server
-# or use your preferred local server
+git clone <repository-url>
+cd gadget-store
 ```
 
-### Accessing the Application
-1. Navigate to `public/auth.html` for authentication
-2. Log in with admin credentials
-3. Access the dashboard at `public/admin/dashboard.html`
-
-### Admin Operations
-
-#### Products
-- View all products with filtering and search
-- Add new products with details and images
-- Edit product information
-- Delete products
-- Track product inventory
-
-#### Categories
-- Create new product categories
-- Edit category details
-- Manage category organization
-- View products by category
-
-#### Orders (coming soon!!)
-- View all customer orders
-- Track order status (pending, processing, shipped, delivered)
-- Manage order fulfillment
-
-#### Customers (coming soon)
-- View customer profiles
-- Track customer purchase history
-- Monitor customer spending
-- Customer analytics
-
-#### Inventory
-- Monitor stock levels
-- Set low stock thresholds
-- View inventory history
-- Track stock movements
-
-## Environment Variables
-
-Create a `.env` file with the following variables:
-
-```
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
-
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+### 2. Install Dependencies
+```bash
+npm install
 ```
 
-## Security Considerations
+### 3. Environment Configuration
+Create a `.env` file in the root directory. You will need API keys for Firebase and Cloudinary.
+> **Note:** This file is ignored by Git for security.
 
-- **Authentication**: All admin routes are protected by authentication guards
-- **Firebase Rules**: Set up proper Firestore security rules
-- **Sensitive Files**: Firebase config and services are added to `.gitignore`
-- **Input Validation**: Always validate user inputs on both client and server
-- **HTTPS**: Use HTTPS in production
+```env
+# Firebase Configuration
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 
-## Browser Support
+# Cloudinary Configuration
+VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+VITE_CLOUDINARY_API_KEY=your_api_key
+VITE_CLOUDINARY_UPLOAD_PRESET=your_upload_preset
+```
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
+### 4. Run Development Server
+```bash
+npm run dev
+```
+The app will be available at `http://localhost:5173`.
 
-## Contributing
+### 5. Build for Production
+To create a production-ready build:
+```bash
+npm run build
+```
+The output will be in the `dist/` directory.
 
-1. Create a new branch for your feature
-2. Make your changes
-3. Test thoroughly
-4. Submit a pull request
+## 🔒 Security
 
-## Future Enhancements
+- **Environment Variables**: API keys are stored in `.env` and accessed via `import.meta.env`.
+- **Firebase Security Rules**: Ensure your Firestore rules are configured to restrict access (e.g., only authenticated admins can write).
 
-- [ ] Payment integration (Stripe, PayPal)
-- [ ] Email notifications for orders
-- [ ] SMS alerts for low stock
-- [ ] Customer reviews and ratings
-- [ ] Wishlist functionality
-- [ ] Advanced analytics dashboard
-- [ ] Bulk product import/export
-- [ ] Multi-currency support
+## 📂 Project Structure
 
-## License
+```
+gadget-store/
+├── src/
+│   ├── admin/
+│   │   ├── components/   # Reusable UI (Sidebar, Topbar, Modal, Toast)
+│   │   ├── pages/        # Page logic (Dashboard, Products, Categories, etc.)
+│   │   ├── store/        # Data logic & Firebase interactions
+│   │   └── utils/        # Helper functions
+│   ├── api/              # Firebase & Cloudinary config
+│   ├── assets/           # Static assets
+│   ├── styles/           # Global styles & Tailwind directives
+│   └── main.js           # Application entry point & routing
+├── public/               # Static public assets
+├── index.html            # Main HTML entry
+├── vite.config.js        # Vite configuration
+└── package.json          # Dependencies & scripts
+```
 
-This project is proprietary and confidential.
+## 📄 License
 
-## Support
-
-For issues, bugs, or feature requests, please contact the development team.
-
----
-
-**Last Updated**: January 2026
+This project is proprietary.
