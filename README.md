@@ -2,37 +2,37 @@
 
 A modern, responsive, and powerful admin dashboard for managing an e-commerce gadget store. Built with **Vanilla JavaScript**, **Vite**, **Tailwind CSS**, and backed by **Firebase**.
 
-## 🚀 Features
+##  Features
 
-### 📊 Dashboard & Analytics
+### Dashboard & Analytics
 - **Real-time Overview**: Revenue charts, top-selling categories, and key business metrics.
 - **Stock Alerts**: Instant visibility into low-stock and out-of-stock items.
 
-### 📦 Product Management
+###  Product Management
 - **Full CRUD**: Create, Read, Update, and Delete products.
 - **Image Uploads**: Seamless integration with **Cloudinary** for product images.
 - **Rich Details**: Manage pricing, stock, SKUs, and categories.
 - **Search & Filter**: Quickly find products by name, SKU, or category.
 
-### 📂 Category Management
+###  Category Management
 - **Organization**: Create and manage product categories.
 - **Automation**: Auto-generated slugs and icon suggestions based on category names.
 - **Visuals**: Material Symbols integration for category icons.
 
-### 🏭 Inventory Control
+###  Inventory Control
 - **Stock Adjustments**: easy-to-use interface for restocking or correcting inventory counts.
 - **Status Tracking**: Visual indicators for "In Stock", "Low Stock", and "Out of Stock".
 - **Valuation**: Real-time calculation of total inventory value.
 
-### 🛒 Order Management
+###  Order Management
 - **Order Tracking**: Monitor customer orders from "Pending" to "Delivered".
 - **Status Updates**: Quickly update order statuses to keep customers informed.
 
-### 📱 Mobile Responsive
+###  Mobile Responsive
 - **Mobile-First Design**: Fully functional on smartphones and tablets.
 - **Collapsible Sidebar**: Smooth navigation on smaller screens.
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript (ES Modules)
 - **Styling**: Tailwind CSS v4 (PostCSS)
@@ -42,7 +42,7 @@ A modern, responsive, and powerful admin dashboard for managing an e-commerce ga
 - **Icons**: Material Symbols (Google Fonts)
 - **Fonts**: Inter (Google Fonts)
 
-## ⚙️ Setup & Installation
+##  Setup & Installation
 
 Follow these steps to set up the project locally.
 
@@ -89,12 +89,12 @@ npm run build
 ```
 The output will be in the `dist/` directory.
 
-## 🔒 Security
+##  Security
 
 - **Environment Variables**: API keys are stored in `.env` and accessed via `import.meta.env`.
 - **Firebase Security Rules**: Ensure your Firestore rules are configured to restrict access (e.g., only authenticated admins can write).
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 gadget-store/
@@ -114,6 +114,6 @@ gadget-store/
 └── package.json          # Dependencies & scripts
 ```
 
-## 📄 License
+##  License
 
 This project is proprietary.
