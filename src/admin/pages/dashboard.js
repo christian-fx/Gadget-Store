@@ -10,11 +10,34 @@ export async function renderDashboard() {
     const app = document.getElementById('app');
 
     // Initialize Stores
-    await Promise.all([
-        AdminProductStore.init(),
-        AdminOrderStore.init(),
-        AdminUserStore.init()
-    ]);
+    // Initialize Stores
+    try {
+        await Promise.all([
+            AdminProductStore.init(),
+            AdminOrderStore.init(),
+            AdminUserStore.init()
+        ]);
+    } catch (error) {
+        console.error("Dashboard Config Error:", error);
+        app.innerHTML = `
+            <div class="flex h-screen items-center justify-center bg-slate-100">
+                <div class="text-center p-8 bg-white rounded-xl shadow-lg border border-red-100 max-w-md">
+                    <span class="material-symbols-outlined text-4xl text-rose-500 mb-4">error</span>
+                    <h2 class="text-xl font-bold text-slate-900 mb-2">Failed to Load Dashboard</h2>
+                    <p class="text-slate-600 mb-6 text-sm">
+                        Could not connect to the database. This usually means API keys are missing or permissions are denied.
+                    </p>
+                    <button onclick="window.location.reload()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                        Retry Connection
+                    </button>
+                    <div class="mt-4 p-2 bg-slate-50 rounded text-xs text-left overflow-auto max-h-32 text-slate-500 font-mono">
+                        ${error.message || JSON.stringify(error)}
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
 
     const products = AdminProductStore.getAll();
     const orders = AdminOrderStore.getAll();

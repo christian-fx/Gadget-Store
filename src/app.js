@@ -32,9 +32,12 @@ export function initRouter() {
     // Handle hash changes
     window.addEventListener('hashchange', handleRoute);
 
-    // Initial load
-    window.addEventListener('load', handleRoute);
+    // Handle hash changes
+    window.addEventListener('hashchange', handleRoute);
+
+    // Initial load - run immediately when initialized
+    handleRoute();
 }
 
-// Start the router
-initRouter();
+// Export only, let main.js initialize
+
