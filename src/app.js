@@ -18,7 +18,7 @@ const routes = {
 };
 
 export function initRouter() {
-    function handleRoute() {
+    async function handleRoute() {
         const hash = window.location.hash.slice(1) || 'dashboard'; // Default to dashboard
         const renderer = routes[hash] || routes['dashboard'];
 
@@ -27,10 +27,10 @@ export function initRouter() {
         if (app) app.innerHTML = '';
 
         // Render page
-        renderer();
+        await renderer();
 
         // Update global UI elements (Sidebar/Topbar)
-        updateGlobalUI();
+        await updateGlobalUI();
     }
 
     // Handle hash changes

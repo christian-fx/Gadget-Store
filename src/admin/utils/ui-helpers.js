@@ -37,8 +37,8 @@ export function initSidebarLogic() {
 import { AdminSettingsStore } from '../store/admin-settings-store.js';
 
 export async function updateGlobalUI() {
-    // Only fetch if store is initialized, or init it
-    // Store handles its own init check usually, but let's be safe
+    // Ensure settings are loaded before updating UI
+    await AdminSettingsStore.init();
     const settings = AdminSettingsStore.getSettings();
     if (!settings) return;
 
@@ -50,13 +50,12 @@ export async function updateGlobalUI() {
 
     // Update Topbar User
     const userNameEl = document.getElementById('topbar-user-name');
-    const userRoleEl = document.getElementById('topbar-user-role');
 
     if (userNameEl) {
         userNameEl.textContent = `${settings.firstName} ${settings.lastName}`;
     }
 
-    // Role is usually static for now, or could be in settings too
+    // Role is usually static for now
 }
 
 export function getCurrencyDetails() {
@@ -67,7 +66,8 @@ export function getCurrencyDetails() {
     const rates = {
         'USD': 1,
         'EUR': 0.92,
-        'GBP': 0.79
+        'GBP': 0.79,
+        'NGN': 1600
     };
 
     const rate = rates[currency] || 1;

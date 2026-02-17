@@ -109,7 +109,7 @@ export async function renderDashboard() {
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Revenue</p>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
+                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
                                     <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Real Data
                                     </p>
@@ -123,7 +123,7 @@ export async function renderDashboard() {
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Orders</p>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">${totalOrders.toLocaleString()}</h3>
+                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalOrders.toLocaleString()}</h3>
                                     <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">shopping_cart</span> Real Data
                                     </p>
@@ -137,7 +137,7 @@ export async function renderDashboard() {
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Customers</p>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">${totalCustomers.toLocaleString()}</h3>
+                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalCustomers.toLocaleString()}</h3>
                                      <p class="text-blue-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">person</span> Active
                                     </p>
@@ -151,7 +151,7 @@ export async function renderDashboard() {
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Products</p>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">${totalProducts.toLocaleString()}</h3>
+                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalProducts.toLocaleString()}</h3>
                                     <p class="text-amber-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">warning</span> ${lowStockCount} Low Stock
                                     </p>
@@ -167,7 +167,7 @@ export async function renderDashboard() {
                             <!-- Revenue Chart -->
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 lg:col-span-2">
                                 <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-lg font-bold text-slate-900">Revenue Overview</h3>
+                                    <h3 class="text-lg font-semibold text-slate-900">Revenue Overview</h3>
                                     <span class="text-sm text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">Last 6 Months</span>
                                 </div>
                                 <div class="h-80 w-full relative">
@@ -177,7 +177,7 @@ export async function renderDashboard() {
 
                             <!-- Top Categories -->
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
-                                <h3 class="text-lg font-bold text-slate-900 mb-6">Top Categories</h3>
+                                <h3 class="text-lg font-semibold text-slate-900 mb-6">Top Categories</h3>
                                 <div class="space-y-6">
                                     ${topCategories.length > 0 ? topCategories.map(cat => `
                                         <div>

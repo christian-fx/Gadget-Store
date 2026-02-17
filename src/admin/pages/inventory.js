@@ -37,28 +37,29 @@ export function renderInventory() {
                         <!-- Table -->
                         <div class="bg-surface border border-border-color rounded-xl shadow-sm overflow-hidden">
                              <div class="px-6 py-4 border-b border-border-color flex flex-col md:flex-row justify-between items-center bg-slate-50 gap-4">
-                                <h3 class="font-bold text-text-main text-lg shrink-0">Inventory Items</h3>
-                                <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                                    <input type="text" id="inventorySearch" placeholder="Search by name or SKU..." class="border border-border-color rounded-lg px-3 py-2 text-sm w-full md:w-64 focus:outline-none focus:border-primary" />
-                                    <select id="stockFilter" class="border border-border-color rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-primary w-full md:w-auto">
-                                        <option value="all">All Status</option>
-                                        <option value="instock">In Stock</option>
-                                        <option value="lowstock">Low Stock</option>
-                                        <option value="outstock">Out of Stock</option>
-                                    </select>
-                                    <button class="text-sm text-primary hover:text-primary-dark font-bold bg-white border border-border-color px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors shrink-0 w-full md:w-auto">Export Report</button>
+                                <h3 class="font-semibold text-text-main text-lg shrink-0">Inventory Items</h3>
+                               <div class="bg-surface rounded-xl border border-border-color shadow-sm p-3 flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                                <input type="text" id="inventorySearch" placeholder="Search inventory..." class="flex-1 border border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-64" />
+                                <select id="stockFilter" class="border border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-48">
+                                    <option value="all">All Stock Status</option>
+                                    <option value="instock">In Stock</option>
+                                    <option value="lowstock">Low Stock (< 10)</option>
+                                    <option value="outstock">Out of Stock</option>
+                                </select>
+                            </div>        <button class="text-sm text-primary hover:text-primary-dark font-semibold bg-white border border-border-color px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors shrink-0 w-full md:w-auto">Export Report</button>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Product</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">SKU</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Stock Level</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-right text-xs font-bold text-text-muted uppercase tracking-wider">Value</th>
-                                            <th class="px-6 py-4 text-right text-xs font-bold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Total Value</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inventory-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -73,17 +74,17 @@ export function renderInventory() {
         <!-- Adjust Stock Modal -->
         <div id="stockModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
              <div class="bg-surface w-full max-w-md rounded-2xl shadow-2xl p-6 transform scale-100 transition-all">
-                <h3 class="text-xl font-bold text-text-main mb-6">Adjust Stock Level</h3>
-                <p class="text-text-muted mb-4 text-sm">Update inventory for <span id="stockProductName" class="font-bold text-text-main">Product Name</span></p>
+                <h3 class="text-xl font-semibold text-text-main mb-6">Adjust Stock Level</h3>
+                <p class="text-text-muted mb-4 text-sm">Update inventory for <span id="stockProductName" class="font-semibold text-text-main">Product Name</span></p>
                 
                 <form id="adjustStockForm" class="space-y-6">
                     <div>
                         <label class="block text-sm font-semibold text-text-main mb-2">New Stock Quantity</label>
-                        <input type="number" id="newStockQty" class="block w-full rounded-lg border-2 border-border-color bg-white p-3 text-text-main focus:border-primary focus:outline-none text-lg font-mono" min="0" required />
+                        <input type="number" id="newStockQty" class="block w-full rounded-lg border border-border-color bg-white p-3 text-text-main focus:border-primary focus:outline-none text-lg font-mono" min="0" required />
                     </div>
                      <div>
                         <label class="block text-sm font-semibold text-text-main mb-2">Reason for Adjustment</label>
-                        <select class="block w-full rounded-lg border-2 border-border-color bg-white p-3 text-text-main focus:border-primary focus:outline-none">
+                        <select class="block w-full rounded-lg border border-border-color bg-white p-3 text-text-main focus:border-primary focus:outline-none">
                             <option value="restock">Restock</option>
                             <option value="correction">Inventory Correction</option>
                             <option value="damage">Damaged/Lost</option>
@@ -104,7 +105,7 @@ export function renderInventory() {
 
 async function initInventoryLogic() {
     const tableBody = document.getElementById('inventory-table-body');
-    if (tableBody) tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-text-muted">Loading inventory...</td></tr>';
+    if (tableBody) tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-text-muted">Loading inventory...</td></tr>';
 
     try {
         await Promise.all([
@@ -116,7 +117,7 @@ async function initInventoryLogic() {
         renderInventoryTable(currentInventory);
         updateInventoryStats();
     } catch (error) {
-        if (tableBody) tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-rose-500">Error loading inventory.</td></tr>';
+        if (tableBody) tableBody.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-rose-500">Error loading inventory.</td></tr>';
         console.error(error);
         Toast.show('Failed to load inventory', 'error');
     }
@@ -300,37 +301,30 @@ function renderInventoryTable(products) {
 
     if (container) {
         if (!products || products.length === 0) {
-            container.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-text-muted">No inventory items found.</td></tr>';
+            container.innerHTML = '<tr><td colspan="7" class="text-center py-8 text-text-muted">No inventory items found.</td></tr>';
             return;
         }
 
         container.innerHTML = products.map(product => `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap font-bold text-text-main text-sm">
+                <td class="px-6 py-4 whitespace-nowrap font-semibold text-text-main text-sm">
                     <div class="flex items-center">
                         <div class="h-10 w-10 flex-shrink-0 mr-3">
                             <img class="h-10 w-10 rounded-lg object-cover border border-border-color" src="${product.image || 'https://placehold.co/40'}" alt="">
                         </div>
-                        <div class="text-text-main font-bold">${product.name}</div>
+                        <div class="text-text-main font-semibold">${product.name}</div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-muted font-mono text-xs">
-                    <span class="border border-border-color rounded bg-slate-50 px-2 py-1">${product.sku || 'N/A'}</span>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main">
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold w-8 text-right">${product.stock}</span>
-                        <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
-                            <div class="h-full ${getStockColorClass(product.stock, 100)}" style="width: ${Math.min(product.stock, 100)}%"></div>
-                        </div>
-                    </div>
-                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-medium">${product.stock}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price * product.stock)}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${getStatusColor(product.stock)}">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
+                        ${getStatusColor(product.stock)}">
                         ${product.stock === 0 ? 'Out of Stock' : (product.stock < 10 ? 'Low Stock' : 'In Stock')}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-bold">${formatCurrency(product.price * product.stock)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="adjust-stock-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${product.id}">
                         Adjust

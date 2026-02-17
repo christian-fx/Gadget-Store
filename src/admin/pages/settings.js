@@ -82,6 +82,7 @@ export async function renderSettings() {
                                         <option value="USD" ${settings.currency === 'USD' ? 'selected' : ''}>USD ($)</option>
                                         <option value="EUR" ${settings.currency === 'EUR' ? 'selected' : ''}>EUR (€)</option>
                                         <option value="GBP" ${settings.currency === 'GBP' ? 'selected' : ''}>GBP (£)</option>
+                                        <option value="NGN" ${settings.currency === 'NGN' ? 'selected' : ''}>Nigerian Naira (₦)</option>
                                     </select>
                                 </div>
                                 <div id="saveStoreContainer" class="pt-4 hidden">

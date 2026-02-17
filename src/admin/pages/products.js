@@ -24,9 +24,9 @@ export function renderProducts() {
                      <div class="max-w-7xl mx-auto flex flex-col gap-6">
                         <!-- Actions & Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                             <div class="bg-surface rounded-xl border border-border-color shadow-sm p-3 flex flex-col md:flex-row gap-3 w-full md:w-auto">
-                                <input type="text" id="productSearch" placeholder="Search products..." class="flex-1 border-2 border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-64" />
-                                <select id="categoryFilter" class="border-2 border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-48">
+                            <div class="bg-surface rounded-xl border border-border-color shadow-sm p-3 flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                                <input type="text" id="productSearch" placeholder="Search products..." class="flex-1 border border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-64" />
+                                <select id="categoryFilter" class="border border-border-color rounded-lg px-3 py-1.5 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-48">
                                     <option value="">All Categories</option>
                                     ${AdminCategoryStore.getAll().map(cat => `<option value="${cat.slug}">${cat.name}</option>`).join('')}
                                 </select>
@@ -42,12 +42,12 @@ export function renderProducts() {
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Product</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Category</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Price</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Stock</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-right text-xs font-bold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
+                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="products-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -239,7 +239,7 @@ function setupEventListeners() {
         const div = document.createElement('div');
         div.className = 'flex gap-2 mb-2';
         div.innerHTML = `
-            <input placeholder="Feature" value="${value}" class="feature-input flex-1 rounded-lg border-2 border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
+            <input placeholder="Feature" value="${value}" class="feature-input flex-1 rounded-lg border border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
             <button type="button" class="text-rose-500 hover:text-rose-700 p-2 hover:bg-rose-50 rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">delete</span></button>
         `;
         div.querySelector('button').addEventListener('click', () => div.remove());
@@ -251,8 +251,8 @@ function setupEventListeners() {
         const div = document.createElement('div');
         div.className = 'grid grid-cols-2 gap-2 relative group mb-2';
         div.innerHTML = `
-            <input placeholder="Key" value="${key}" class="spec-key rounded-lg border-2 border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
-            <input placeholder="Value" value="${value}" class="spec-value rounded-lg border-2 border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
+            <input placeholder="Key" value="${key}" class="spec-key rounded-lg border border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
+            <input placeholder="Value" value="${value}" class="spec-value rounded-lg border border-border-color bg-white p-2.5 text-sm text-text-main focus:border-primary focus:outline-none" />
             <button type="button" class="absolute -right-8 top-1.5 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:text-rose-700"><span class="material-symbols-outlined text-[20px]">delete</span></button>
         `;
         div.querySelector('button').addEventListener('click', () => div.remove());
@@ -568,10 +568,10 @@ function renderTable(products) {
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-bold">${formatCurrency(product.price)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-text-main font-semibold">${formatCurrency(product.price)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-text-main font-medium">${product.stock}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
                         ${getStatusColor(product.stock > 0 ? 'instock' : 'outstock')}">
                         ${product.stock > 0 ? 'In Stock' : 'Out of Stock'}
                     </span>
