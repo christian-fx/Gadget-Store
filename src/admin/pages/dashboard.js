@@ -10,7 +10,6 @@ export async function renderDashboard() {
     const app = document.getElementById('app');
 
     // Initialize Stores
-    // Initialize Stores
     try {
         await Promise.all([
             AdminProductStore.init(),

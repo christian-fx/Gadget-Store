@@ -32,9 +32,6 @@ export function initRouter() {
     // Handle hash changes
     window.addEventListener('hashchange', handleRoute);
 
-    // Handle hash changes
-    window.addEventListener('hashchange', handleRoute);
-
     // Initial load - run immediately when initialized
     handleRoute();
 }
