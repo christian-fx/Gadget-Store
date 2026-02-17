@@ -1,10 +1,11 @@
 import { Sidebar } from '../components/sidebar.js';
 import { Topbar } from '../components/topbar.js';
-import { initSidebarLogic } from '../utils/ui-helpers.js';
+import { initSidebarLogic, formatCurrency } from '../utils/ui-helpers.js';
 import { Chart } from 'chart.js/auto';
 import { AdminProductStore } from '../store/admin-product-store.js';
 import { AdminOrderStore } from '../store/admin-order-store.js';
 import { AdminUserStore } from '../store/admin-user-store.js';
+import { AdminSettingsStore } from '../store/admin-settings-store.js';
 
 export async function renderDashboard() {
     const app = document.getElementById('app');
@@ -14,7 +15,8 @@ export async function renderDashboard() {
         await Promise.all([
             AdminProductStore.init(),
             AdminOrderStore.init(),
-            AdminUserStore.init()
+            AdminUserStore.init(),
+            AdminSettingsStore.init()
         ]);
     } catch (error) {
         console.error("Dashboard Config Error:", error);
@@ -107,7 +109,7 @@ export async function renderDashboard() {
                             <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Revenue</p>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</h3>
+                                    <h3 class="text-3xl font-bold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
                                     <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Real Data
                                     </p>
@@ -186,7 +188,7 @@ export async function renderDashboard() {
                                             <div class="w-full bg-slate-100 rounded-full h-2.5">
                                                 <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${cat.percentage}%"></div>
                                             </div>
-                                            <p class="text-xs text-slate-500 mt-1">$${cat.revenue.toLocaleString()} revenue</p>
+                                            <p class="text-xs text-slate-500 mt-1">${formatCurrency(cat.revenue)} revenue</p>
                                         </div>
                                     `).join('') : '<p class="text-slate-500 text-sm text-center py-8">No sales data yet.</p>'}
                                 </div>
@@ -240,7 +242,7 @@ function initDashboardChart(labels, data) {
                                     label += ': ';
                                 }
                                 if (context.parsed.y !== null) {
-                                    label += new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    label += formatCurrency(context.parsed.y);
                                 }
                                 return label;
                             }
@@ -256,7 +258,7 @@ function initDashboardChart(labels, data) {
                         },
                         ticks: {
                             callback: function (value) {
-                                return '$' + value.toLocaleString();
+                                return formatCurrency(value);
                             }
                         }
                     },

@@ -1,7 +1,9 @@
 import { Sidebar } from '../components/sidebar.js';
 import { Topbar } from '../components/topbar.js';
-import { initSidebarLogic } from '../utils/ui-helpers.js';
+import { initSidebarLogic, formatCurrency, getCurrencyDetails } from '../utils/ui-helpers.js';
 import { AdminProductStore } from '../store/admin-product-store.js';
+import { AdminCategoryStore } from '../store/admin-category-store.js';
+import { AdminSettingsStore } from '../store/admin-settings-store.js';
 import { Toast } from '../components/toast.js';
 
 let currentInventory = [];
@@ -105,10 +107,14 @@ async function initInventoryLogic() {
     if (tableBody) tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-text-muted">Loading inventory...</td></tr>';
 
     try {
-        await AdminProductStore.init();
+        await Promise.all([
+            AdminProductStore.init(),
+            AdminCategoryStore.init(),
+            AdminSettingsStore.init()
+        ]);
         currentInventory = AdminProductStore.getAll();
         renderInventoryTable(currentInventory);
-        updateInventoryStats(currentInventory);
+        updateInventoryStats();
     } catch (error) {
         if (tableBody) tableBody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-rose-500">Error loading inventory.</td></tr>';
         console.error(error);
@@ -141,11 +147,67 @@ function setupFilters() {
         });
 
         renderInventoryTable(currentInventory);
-        updateInventoryStats(currentInventory); // Update stats based on filtered view or all? usually all, but let's update reflected stats
+        updateInventoryStats(); // Update stats based on filtered view or all? usually all, but let's update reflected stats
     };
 
     if (searchInput) searchInput.addEventListener('input', filterInventory);
     if (stockFilter) stockFilter.addEventListener('change', filterInventory);
+
+    const exportBtn = document.querySelector('button[class*="Export Report"]');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            exportToCSV(currentInventory);
+        });
+    }
+}
+
+function exportToCSV(products) {
+    if (!products || products.length === 0) {
+        Toast.show('No data to export', 'error');
+        return;
+    }
+
+    // Get currency details
+    const { currency, rate } = getCurrencyDetails();
+
+    // Define columns
+    const headers = ['Product Name', 'SKU', 'Stock Level', 'Status', `Price (${currency})`, `Total Value (${currency})`];
+
+    // Format rows
+    const rows = products.map(p => {
+        const status = p.stock === 0 ? 'Out of Stock' : (p.stock < 10 ? 'Low Stock' : 'In Stock');
+        // Convert values based on rate
+        const convertedPrice = (p.price * rate).toFixed(2);
+        const convertedTotalValue = ((p.price * p.stock) * rate).toFixed(2);
+
+        // Escape quotes and commas for CSV
+        const escape = (text) => `"${String(text).replace(/"/g, '""')}"`;
+
+        return [
+            escape(p.name),
+            escape(p.sku || ''),
+            p.stock,
+            status,
+            convertedPrice,
+            convertedTotalValue
+        ].join(',');
+    });
+
+    // Combine headers and rows
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory_report_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    Toast.show('Inventory report downloaded');
 }
 
 function setupEventListeners() {
@@ -220,7 +282,7 @@ function setupEventListeners() {
                 // Refresh
                 currentInventory = AdminProductStore.getAll();
                 renderInventoryTable(currentInventory);
-                updateInventoryStats(currentInventory);
+                updateInventoryStats();
 
             } catch (error) {
                 console.error(error);
@@ -244,7 +306,14 @@ function renderInventoryTable(products) {
 
         container.innerHTML = products.map(product => `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap font-bold text-text-main text-sm">${product.name}</td>
+                <td class="px-6 py-4 whitespace-nowrap font-bold text-text-main text-sm">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 flex-shrink-0 mr-3">
+                            <img class="h-10 w-10 rounded-lg object-cover border border-border-color" src="${product.image || 'https://placehold.co/40'}" alt="">
+                        </div>
+                        <div class="text-text-main font-bold">${product.name}</div>
+                    </div>
+                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-text-muted font-mono text-xs">
                     <span class="border border-border-color rounded bg-slate-50 px-2 py-1">${product.sku || 'N/A'}</span>
                 </td>
@@ -261,7 +330,7 @@ function renderInventoryTable(products) {
                         ${product.stock === 0 ? 'Out of Stock' : (product.stock < 10 ? 'Low Stock' : 'In Stock')}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-bold">$${(product.price * product.stock).toLocaleString()}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-bold">${formatCurrency(product.price * product.stock)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="adjust-stock-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${product.id}">
                         Adjust
@@ -272,7 +341,7 @@ function renderInventoryTable(products) {
     }
 }
 
-function updateInventoryStats(products) {
+function updateInventoryStats() {
     // Calculate stats based on ALL products, not just filtered ones? usually depends on requirement. Let's do ALL products to keep top stats consistent.
     // Actually, normally specific page stats reflect the view. But "Total Stock Value" usually implies everything. 
     // Let's use the Store check for stats to be accurate to global state.
@@ -286,7 +355,7 @@ function updateInventoryStats(products) {
     const lsEl = document.getElementById('lowStockCount');
     const osEl = document.getElementById('outOfStockCount');
 
-    if (tvEl) tvEl.textContent = '$' + totalValue.toLocaleString();
+    if (tvEl) tvEl.textContent = formatCurrency(totalValue);
     if (lsEl) lsEl.textContent = lowStock;
     if (osEl) osEl.textContent = outOfStock;
 }

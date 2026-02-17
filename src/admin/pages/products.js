@@ -1,9 +1,10 @@
 import { Sidebar } from '../components/sidebar.js';
 import { Topbar } from '../components/topbar.js';
-import { initSidebarLogic } from '../utils/ui-helpers.js';
+import { initSidebarLogic, formatCurrency } from '../utils/ui-helpers.js';
 import { ProductFormModal } from '../components/product-form.js';
 import { AdminProductStore } from '../store/admin-product-store.js';
 import { AdminCategoryStore } from '../store/admin-category-store.js';
+import { AdminSettingsStore } from '../store/admin-settings-store.js';
 import { Toast } from '../components/toast.js';
 import { ConfirmationModal } from '../components/confirmation-modal.js';
 
@@ -151,7 +152,8 @@ async function initProductsLogic() {
     try {
         await Promise.all([
             AdminProductStore.init(),
-            AdminCategoryStore.init()
+            AdminCategoryStore.init(),
+            AdminSettingsStore.init()
         ]);
         currentProducts = AdminProductStore.getAll();
         renderTable(currentProducts);
@@ -421,7 +423,7 @@ function setupEventListeners() {
                     const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
                     setText('viewName', product.name);
-                    setText('viewPrice', `$${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}`);
+                    setText('viewPrice', formatCurrency(product.price));
                     setText('viewCategory', product.category || 'Uncategorized');
                     setText('viewBrand', product.brand || 'Generic');
                     setText('viewStock', product.stock);
@@ -566,7 +568,7 @@ function renderTable(products) {
                     </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-bold">$${product.price}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-text-main font-bold">${formatCurrency(product.price)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-text-main font-medium">${product.stock}</td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide

@@ -38,8 +38,8 @@ export function Topbar(title, subtitle) {
                             <span class="text-primary font-semibold text-sm">A</span>
                         </div>
                         <div class="hidden md:block">
-                            <div class="text-sm font-medium text-slate-900 user-name">Admin User</div>
-                            <div class="text-xs text-slate-500 user-role">Super Admin</div>
+                            <div id="topbar-user-name" class="text-sm font-medium text-slate-900 user-name">Admin User</div>
+                            <div id="topbar-user-role" class="text-xs text-slate-500 user-role">Super Admin</div>
                         </div>
                     </div>
                 </div>

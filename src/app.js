@@ -5,6 +5,7 @@ import { renderCustomers } from './admin/pages/customers.js';
 import { renderInventory } from './admin/pages/inventory.js';
 import { renderSettings } from './admin/pages/settings.js';
 import { renderCategories } from './admin/pages/categories.js';
+import { updateGlobalUI } from './admin/utils/ui-helpers.js';
 
 const routes = {
     'dashboard': renderDashboard,
@@ -27,6 +28,9 @@ export function initRouter() {
 
         // Render page
         renderer();
+
+        // Update global UI elements (Sidebar/Topbar)
+        updateGlobalUI();
     }
 
     // Handle hash changes

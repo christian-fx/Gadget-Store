@@ -21,7 +21,7 @@ export function Sidebar(activePage) {
                         <span class="material-symbols-outlined text-white text-[20px]">storefront</span>
                     </div>
                     <div>
-                        <h1 class="text-white font-bold text-lg tracking-tight">Gadget Admin</h1>
+                        <h1 id="sidebar-brand-name" class="text-white font-bold text-lg tracking-tight">Gadget Admin</h1>
                         <p class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">v2.4.0</p>
                     </div>
                 </div>
