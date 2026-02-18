@@ -242,7 +242,7 @@ export function getCurrencyDetails() {
         'USD': 1,
         'EUR': 0.92,
         'GBP': 0.79,
-        'NGN': 1600
+        'NGN': 1400
     };
 
     const rate = rates[currency] || 1;
