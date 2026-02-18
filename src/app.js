@@ -40,5 +40,3 @@ export function initRouter() {
     handleRoute();
 }
 
-// Export only, let main.js initialize
-

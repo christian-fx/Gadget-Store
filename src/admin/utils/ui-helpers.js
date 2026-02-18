@@ -29,9 +29,6 @@ export function initSidebarLogic() {
     if (overlay) {
         overlay.addEventListener('click', () => toggleSidebar(false));
     }
-
-    // Check if we are on a page with a sidebar and it is missing the overlay in HTML
-    // We can dynamically inject it if needed, or assume it's added in the layout
 }
 
 import { AdminSettingsStore } from '../store/admin-settings-store.js';

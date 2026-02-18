@@ -336,9 +336,6 @@ function renderInventoryTable(products) {
 }
 
 function updateInventoryStats() {
-    // Calculate stats based on ALL products, not just filtered ones? usually depends on requirement. Let's do ALL products to keep top stats consistent.
-    // Actually, normally specific page stats reflect the view. But "Total Stock Value" usually implies everything. 
-    // Let's use the Store check for stats to be accurate to global state.
     const allProducts = AdminProductStore.getAll();
 
     const totalValue = allProducts.reduce((acc, p) => acc + (p.price * p.stock), 0);
