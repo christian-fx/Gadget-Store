@@ -53,13 +53,13 @@ export function renderInventory() {
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Total Value</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Total Value</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inventory-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -307,7 +307,7 @@ function renderInventoryTable(products) {
 
         container.innerHTML = products.map(product => `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap font-semibold text-text-main text-sm">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap font-semibold text-text-main text-sm">
                     <div class="flex items-center">
                         <div class="h-10 w-10 flex-shrink-0 mr-3">
                             <img class="h-10 w-10 rounded-lg object-cover border border-border-color" src="${product.image || 'https://placehold.co/40'}" alt="">
@@ -315,17 +315,17 @@ function renderInventoryTable(products) {
                         <div class="text-text-main font-semibold">${product.name}</div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-medium">${product.stock}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price * product.stock)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price)}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-text-main font-medium">${product.stock}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-text-main font-semibold">${formatCurrency(product.price * product.stock)}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
                         ${getStatusColor(product.stock)}">
                         ${product.stock === 0 ? 'Out of Stock' : (product.stock < 10 ? 'Low Stock' : 'In Stock')}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="adjust-stock-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${product.id}">
                         Adjust
                     </button>

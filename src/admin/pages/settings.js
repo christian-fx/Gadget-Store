@@ -2,7 +2,7 @@ import { Sidebar } from '../components/sidebar.js';
 import { Topbar } from '../components/topbar.js';
 import { AdminSettingsStore } from '../store/admin-settings-store.js';
 import { Toast } from '../components/toast.js';
-import { updateGlobalUI } from '../utils/ui-helpers.js';
+import { updateGlobalUI, initSidebarLogic } from '../utils/ui-helpers.js';
 
 export async function renderSettings() {
     const app = document.getElementById('app');

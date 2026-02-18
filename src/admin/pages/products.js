@@ -21,7 +21,7 @@ export function renderProducts() {
             <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
                 ${Topbar('Products', 'Manage your product inventory')}
                 <main class="flex-1 overflow-y-auto p-4 md:p-8">
-                     <div class="max-w-7xl mx-auto flex flex-col gap-6">
+                     <div class="max-w-7xl mx-auto flex flex-col gap-4 md:gap-6">
                         <!-- Actions & Filters -->
                         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                             <div class="bg-surface rounded-xl border border-border-color shadow-sm p-3 flex flex-col md:flex-row gap-3 w-full md:w-auto">
@@ -42,12 +42,12 @@ export function renderProducts() {
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Product</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Category</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Price</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Stock</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="products-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -64,10 +64,10 @@ export function renderProducts() {
         <!-- View Product Modal -->
         <div id="viewProductModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
              <div class="bg-surface w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden transform scale-100 transition-all max-h-[90vh] flex flex-col">
-                 <div class="flex justify-between items-center px-6 py-4 border-b border-border-color bg-slate-50 shrink-0">
+                 <div class="flex justify-between items-center px-4 py-3 md:px-6 md:py-4 border-b border-border-color bg-slate-50 shrink-0">
                     <div>
-                        <h3 class="text-xl font-bold text-text-main">Product Details</h3>
-                        <p class="text-sm text-text-muted mt-0.5">Full specifications and information</p>
+                        <h3 class="text-lg md:text-xl font-bold text-text-main">Product Details</h3>
+                        <p class="text-xs md:text-sm text-text-muted mt-0.5">Full specifications and information</p>
                     </div>
                      <button id="closeViewModal" class="text-text-muted hover:text-text-main p-2 rounded-full hover:bg-slate-200 transition-colors">
                         <span class="material-symbols-outlined">close</span>
@@ -77,8 +77,8 @@ export function renderProducts() {
                 <div class="p-0 overflow-y-auto bg-white flex-1">
                     <div class="grid grid-cols-1 lg:grid-cols-2">
                         <!-- Left: Image -->
-                        <div class="bg-slate-100 p-8 flex items-center justify-center min-h-[400px] lg:h-full border-b lg:border-b-0 lg:border-r border-border-color relative group">
-                            <img id="viewImage" src="" alt="Product Image" class="max-w-full max-h-[500px] object-contain shadow-sm rounded-lg mix-blend-multiply transition-transform duration-300 group-hover:scale-105" />
+                        <div class="bg-slate-100 p-4 md:p-8 flex items-center justify-center min-h-[250px] md:min-h-[400px] lg:h-full border-b lg:border-b-0 lg:border-r border-border-color relative group">
+                            <img id="viewImage" src="" alt="Product Image" class="max-w-full max-h-[300px] md:max-h-[500px] object-contain shadow-sm rounded-lg mix-blend-multiply transition-transform duration-300 group-hover:scale-105" />
                             <div id="viewImagePlaceholder" class="hidden flex-col items-center text-text-muted">
                                 <span class="material-symbols-outlined text-6xl opacity-20">image</span>
                                 <span class="text-sm mt-2 opacity-50">No image available</span>
@@ -86,14 +86,14 @@ export function renderProducts() {
                         </div>
                         
                         <!-- Right: Details -->
-                        <div class="p-8 space-y-8">
+                        <div class="p-4 md:p-8 space-y-6 md:space-y-8">
                             <div>
                                 <div class="flex justify-between items-start">
-                                    <h2 class="text-3xl font-bold text-text-main leading-tight" id="viewName">Product Name</h2>
+                                    <h2 class="text-2xl md:text-3xl font-bold text-text-main leading-tight" id="viewName">Product Name</h2>
                                     <span id="viewStatus" class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-slate-100 text-slate-800">Status</span>
                                 </div>
                                 <div class="flex items-center gap-4 mt-3 mb-6">
-                                    <p class="text-3xl font-bold text-blue-600" id="viewPrice">$0.00</p>
+                                    <p class="text-2xl md:text-3xl font-bold text-blue-600" id="viewPrice">$0.00</p>
                                     <div class="h-6 w-px bg-slate-200"></div>
                                     <p class="text-sm text-text-muted">Stock: <span class="font-bold text-text-main text-base" id="viewStock">0</span> units</p>
                                     <div class="h-6 w-px bg-slate-200"></div>
@@ -556,10 +556,10 @@ function renderTable(products) {
 
         container.innerHTML = products.map(product => `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap">
-                     <div class="flex items-center gap-4">
-                        <div class="h-12 w-12 rounded-lg bg-slate-100 border border-border-color flex items-center justify-center text-slate-400 overflow-hidden relative">
-                             ${product.image ? `<img src="${product.image}" class="w-full h-full object-cover" />` : '<span class="material-symbols-outlined text-[24px]">image</span>'}
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
+                     <div class="flex items-center gap-3 md:gap-4">
+                        <div class="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-slate-100 border border-border-color flex items-center justify-center text-slate-400 overflow-hidden relative">
+                             ${product.image ? `<img src="${product.image}" class="w-full h-full object-cover" />` : '<span class="material-symbols-outlined text-[20px] md:text-[24px]">image</span>'}
                         </div>
                         <div>
                              <div class="font-bold text-text-main text-sm">${product.name}</div>
@@ -567,16 +567,16 @@ function renderTable(products) {
                         </div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-semibold">${formatCurrency(product.price)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-medium">${product.stock}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted font-medium capitalize">${product.category}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-semibold">${formatCurrency(product.price)}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-medium">${product.stock}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide
                         ${getStatusColor(product.stock > 0 ? 'instock' : 'outstock')}">
                         ${product.stock > 0 ? 'In Stock' : 'Out of Stock'}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex items-center justify-end gap-2">
                         <button class="view-product-btn text-text-muted hover:text-primary p-2 hover:bg-blue-50 rounded-lg transition-colors" data-id="${product.id}" title="View Details">
                             <span class="material-symbols-outlined text-[20px]">visibility</span>

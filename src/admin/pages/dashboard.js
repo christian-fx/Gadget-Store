@@ -101,82 +101,82 @@ export async function renderDashboard() {
             <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
                 ${Topbar('Dashboard', 'Welcome back, Admin! Here\'s what\'s happening today.')}
                 <main class="flex-1 overflow-y-auto p-4 md:p-8">
-                     <div class="max-w-7xl mx-auto flex flex-col gap-8">
+                     <div class="max-w-7xl mx-auto flex flex-col gap-6 md:gap-8">
                         
                         <!-- Stats Cards -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                             <!-- Revenue -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Revenue</p>
-                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
+                                    <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
                                     <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Real Data
                                     </p>
                                 </div>
-                                <div class="bg-emerald-50 p-3 rounded-xl text-emerald-600">
+                                <div class="bg-emerald-50 p-2 md:p-3 rounded-xl text-emerald-600">
                                     <span class="material-symbols-outlined text-3xl">attach_money</span>
                                 </div>
                             </div>
 
                             <!-- Orders -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Orders</p>
-                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalOrders.toLocaleString()}</h3>
+                                    <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${totalOrders.toLocaleString()}</h3>
                                     <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">shopping_cart</span> Real Data
                                     </p>
                                 </div>
-                                <div class="bg-blue-50 p-3 rounded-xl text-blue-600">
+                                <div class="bg-blue-50 p-2 md:p-3 rounded-xl text-blue-600">
                                     <span class="material-symbols-outlined text-3xl">shopping_cart</span>
                                 </div>
                             </div>
 
                             <!-- Customers -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Customers</p>
-                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalCustomers.toLocaleString()}</h3>
+                                    <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${totalCustomers.toLocaleString()}</h3>
                                      <p class="text-blue-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">person</span> Active
                                     </p>
                                 </div>
-                                <div class="bg-purple-50 p-3 rounded-xl text-purple-600">
+                                <div class="bg-purple-50 p-2 md:p-3 rounded-xl text-purple-600">
                                     <span class="material-symbols-outlined text-3xl">group</span>
                                 </div>
                             </div>
 
                             <!-- Products -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 flex items-start justify-between">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 flex items-start justify-between">
                                 <div>
                                     <p class="text-slate-500 font-medium text-sm">Total Products</p>
-                                    <h3 class="text-3xl font-semibold text-slate-900 mt-2">${totalProducts.toLocaleString()}</h3>
+                                    <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${totalProducts.toLocaleString()}</h3>
                                     <p class="text-amber-600 text-sm font-medium mt-1 inline-flex items-center">
                                         <span class="material-symbols-outlined text-[16px] mr-1">warning</span> ${lowStockCount} Low Stock
                                     </p>
                                 </div>
-                                <div class="bg-amber-50 p-3 rounded-xl text-amber-600">
+                                <div class="bg-amber-50 p-2 md:p-3 rounded-xl text-amber-600">
                                     <span class="material-symbols-outlined text-3xl">shopping_bag</span>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Charts Section -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                             <!-- Revenue Chart -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200 lg:col-span-2">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200 lg:col-span-2">
                                 <div class="flex justify-between items-center mb-6">
                                     <h3 class="text-lg font-semibold text-slate-900">Revenue Overview</h3>
                                     <span class="text-sm text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">Last 6 Months</span>
                                 </div>
-                                <div class="h-80 w-full relative">
+                                <div class="h-64 md:h-80 w-full relative">
                                     <canvas id="revenueChart"></canvas>
                                 </div>
                             </div>
 
                             <!-- Top Categories -->
-                            <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-slate-200">
                                 <h3 class="text-lg font-semibold text-slate-900 mb-6">Top Categories</h3>
                                 <div class="space-y-6">
                                     ${topCategories.length > 0 ? topCategories.map(cat => `

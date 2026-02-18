@@ -27,12 +27,12 @@ export function renderCustomers() {
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Customer</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Email</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Orders</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Total Spent</th>
-                                            <th class="px-6 py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Join Date</th>
-                                            <th class="px-6 py-4 text-right text-xs font-bold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Customer</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Email</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Orders</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Total Spent</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-bold text-text-muted uppercase tracking-wider">Join Date</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-bold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="customers-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -185,7 +185,7 @@ function renderTable(users) {
 
         container.innerHTML = users.map(user => `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <div class="flex items-center gap-3">
                         <div class="h-10 w-10 rounded-full bg-slate-100 border border-border-color flex items-center justify-center text-primary font-bold text-sm">
                             ${user.initials}
@@ -193,11 +193,11 @@ function renderTable(users) {
                         <div class="font-bold text-text-main text-sm">${user.name}</div>
                     </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-muted">${user.email}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-medium">${user.orders}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-main font-bold">$${user.totalSpent.toLocaleString()}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-text-muted text-sm">${user.joinDate}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted">${user.email}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-medium">${user.orders}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-bold">$${user.totalSpent.toLocaleString()}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted text-sm">${user.joinDate}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="view-customer-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${user.id}">
                         View
                     </button>

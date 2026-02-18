@@ -1,6 +1,6 @@
 export function Topbar(title, subtitle) {
     return `
-        <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-6">
+        <header class="bg-white border-b border-slate-200 px-4 md:px-8 py-4 md:py-6">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <!-- Hamburger Menu Button -->

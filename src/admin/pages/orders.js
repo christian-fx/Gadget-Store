@@ -38,12 +38,12 @@ export function renderOrders() {
                                 <table class="min-w-full divide-y divide-border-color">
                                     <thead class="bg-slate-50">
                                         <tr>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Order ID</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Customer</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Items</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Total</th>
-                                            <th class="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
-                                            <th class="px-6 py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Order ID</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Customer</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Items</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Total</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">Status</th>
+                                            <th class="px-4 py-3 md:px-6 md:py-4 text-right text-xs font-semibold text-text-muted uppercase tracking-wider">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="orders-table-body" class="divide-y divide-border-color text-sm bg-white"></tbody>
@@ -321,21 +321,21 @@ function renderTable(orders) {
             const itemCount = order.items ? order.items.length : 0;
             return `
             <tr class="hover:bg-slate-50 transition-colors group">
-                <td class="px-6 py-4 whitespace-nowrap font-mono text-xs text-primary font-semibold">#${order.id.substring(0, 8).toUpperCase()}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap font-mono text-xs text-primary font-semibold">#${order.id.substring(0, 8).toUpperCase()}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <div class="font-semibold text-text-main text-sm">${order.customerName || 'Guest'}</div>
                     <div class="text-xs text-text-muted">${order.customerEmail}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-text-muted">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-text-muted">
                     <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-semibold text-slate-600 border border-slate-200">${itemCount} Items</span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-text-main">${formatCurrency(order.total)}</td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-semibold text-text-main">${formatCurrency(order.total)}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(order.status)}">
                         ${order.status}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="view-order-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${order.id}">
                         View Details
                     </button>
