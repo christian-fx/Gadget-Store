@@ -1,29 +1,63 @@
 import { db } from '../../api/firebase-config.js';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
+import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { AdminNotificationStore } from './admin-notification-store.js';
 
 const COLLECTION_NAME = 'products';
 
 export const AdminProductStore = {
-    // State to hold loaded products (optional caching)
     _products: [],
+    _unsubscribe: null,
+    _initialized: false,
 
     async init() {
-        // Prepare any initial listeners if needed, for now just fetch
-        await this.fetchAll();
-    },
+        if (this._initialized) return;
 
-    async fetchAll() {
-        try {
-            const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
-            this._products = [];
-            querySnapshot.forEach((doc) => {
-                this._products.push({ id: doc.id, ...doc.data() });
+        AdminNotificationStore.init();
+
+        return new Promise((resolve, reject) => {
+            this._unsubscribe = onSnapshot(collection(db, COLLECTION_NAME), (snapshot) => {
+                const isInitialLoad = this._products.length === 0 && !this._initialized;
+
+                snapshot.docChanges().forEach((change) => {
+                    const product = { id: change.doc.id, ...change.doc.data() };
+
+                    if (change.type === "added") {
+                        if (!isInitialLoad) {
+                            AdminNotificationStore.add(
+                                'Product Added',
+                                `${product.name} has been added to inventory.`,
+                                'info'
+                            );
+                        }
+                    }
+
+                    if (change.type === "modified") {
+                        // Check for low stock
+                        if (product.stock < 10 && product.stock > 0) {
+                            AdminNotificationStore.add(
+                                'Low Stock Alert',
+                                `${product.name} is running low (${product.stock} left).`,
+                                'warning'
+                            );
+                        }
+                        if (product.stock === 0) {
+                            AdminNotificationStore.add(
+                                'Out of Stock',
+                                `${product.name} is now out of stock!`,
+                                'error'
+                            );
+                        }
+                    }
+                });
+
+                this._products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                this._initialized = true;
+                resolve(this._products);
+            }, (error) => {
+                console.error("Error listening to products: ", error);
+                reject(error);
             });
-            return this._products;
-        } catch (error) {
-            console.error("Error fetching products: ", error);
-            throw error;
-        }
+        });
     },
 
     getAll() {
@@ -32,7 +66,6 @@ export const AdminProductStore = {
 
     async add(productData) {
         try {
-            // Ensure numerics
             const data = {
                 ...productData,
                 price: parseFloat(productData.price),
@@ -40,9 +73,7 @@ export const AdminProductStore = {
                 createdAt: new Date().toISOString()
             };
             const docRef = await addDoc(collection(db, COLLECTION_NAME), data);
-            const newProduct = { id: docRef.id, ...data };
-            this._products.push(newProduct);
-            return newProduct;
+            return { id: docRef.id, ...data };
         } catch (error) {
             console.error("Error adding product: ", error);
             throw error;
@@ -53,12 +84,6 @@ export const AdminProductStore = {
         try {
             const productRef = doc(db, COLLECTION_NAME, id);
             await updateDoc(productRef, updates);
-
-            // Update local state
-            const index = this._products.findIndex(p => p.id === id);
-            if (index !== -1) {
-                this._products[index] = { ...this._products[index], ...updates };
-            }
         } catch (error) {
             console.error("Error updating product: ", error);
             throw error;
@@ -68,10 +93,17 @@ export const AdminProductStore = {
     async delete(id) {
         try {
             await deleteDoc(doc(db, COLLECTION_NAME, id));
-            this._products = this._products.filter(p => p.id !== id);
         } catch (error) {
             console.error("Error deleting product: ", error);
             throw error;
+        }
+    },
+
+    stopListening() {
+        if (this._unsubscribe) {
+            this._unsubscribe();
+            this._unsubscribe = null;
+            this._initialized = false;
         }
     }
 };

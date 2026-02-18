@@ -1,37 +1,59 @@
 import { db } from '../../api/firebase-config.js';
-import { collection, getDocs, doc, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import { AdminNotificationStore } from './admin-notification-store.js';
 
 const COLLECTION_NAME = 'users';
 
 export const AdminUserStore = {
     _users: [],
+    _unsubscribe: null,
+    _initialized: false,
 
     async init() {
-        await this.fetchAll();
-    },
+        if (this._initialized) return;
 
-    async fetchAll() {
-        try {
+        AdminNotificationStore.init();
+
+        return new Promise((resolve, reject) => {
             const q = query(collection(db, COLLECTION_NAME), orderBy("createdAt", "desc"));
-            // Note: If 'createdAt' index doesn't exist, this might fail initially. fallback to simple getDocs
-            // const querySnapshot = await getDocs(q).catch(() => getDocs(collection(db, COLLECTION_NAME)));
-            // Let's stick to simple getDocs for now to avoid index requirement issues immediately
-            const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
 
-            this._users = [];
-            querySnapshot.forEach((doc) => {
-                this._users.push({ id: doc.id, ...doc.data() });
+            this._unsubscribe = onSnapshot(q, (snapshot) => {
+                const isInitialLoad = this._users.length === 0 && !this._initialized;
+
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        if (!isInitialLoad) {
+                            const user = change.doc.data();
+                            AdminNotificationStore.add(
+                                'New Customer',
+                                `${user.name || 'A new user'} just signed up!`,
+                                'success'
+                            );
+                        }
+                    }
+                });
+
+                this._users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                this._initialized = true;
+                resolve(this._users);
+            }, (error) => {
+                console.error("Error listening to users: ", error);
+                // Fallback to empty if collection doesn't exist yet or permission denied
+                this._users = [];
+                reject(error);
             });
-            return this._users;
-        } catch (error) {
-            console.error("Error fetching users: ", error);
-            // Fallback to empty if collection doesn't exist yet or permission denied
-            this._users = [];
-            throw error;
-        }
+        });
     },
 
     getAll() {
         return this._users;
+    },
+
+    stopListening() {
+        if (this._unsubscribe) {
+            this._unsubscribe();
+            this._unsubscribe = null;
+            this._initialized = false;
+        }
     }
 };

@@ -1,47 +1,72 @@
 import { db } from '../../api/firebase-config.js';
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, doc, updateDoc, query, orderBy } from "firebase/firestore";
+import { AdminNotificationStore } from './admin-notification-store.js';
 
 const COLLECTION_NAME = 'orders';
 
 export const AdminOrderStore = {
     _orders: [],
+    _unsubscribe: null,
+    _initialized: false,
 
     async init() {
-        await this.fetchAll();
-    },
+        if (this._initialized) return;
 
-    async fetchAll() {
-        try {
+        AdminNotificationStore.init(); // Ensure notifications are ready
+
+        return new Promise((resolve, reject) => {
             const q = query(collection(db, COLLECTION_NAME), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(q);
-            this._orders = [];
-            querySnapshot.forEach((doc) => {
-                this._orders.push({ id: doc.id, ...doc.data() });
+
+            this._unsubscribe = onSnapshot(q, (snapshot) => {
+                const isInitialLoad = this._orders.length === 0 && !this._initialized;
+
+                snapshot.docChanges().forEach((change) => {
+                    const order = { id: change.doc.id, ...change.doc.data() };
+
+                    if (change.type === "added") {
+                        if (!isInitialLoad) {
+                            AdminNotificationStore.add(
+                                'New Order Received',
+                                `Order #${order.id.substring(0, 8).toUpperCase()} from ${order.customerName || 'Guest'}`,
+                                'success'
+                            );
+                        }
+                    }
+                    if (change.type === "modified") {
+                        // Optional: Notify on status change? Maybe too noisy for admin doing the change.
+                    }
+                });
+
+                this._orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                this._initialized = true;
+                resolve(this._orders);
+            }, (error) => {
+                console.error("Error listening to orders: ", error);
+                reject(error);
             });
-            return this._orders;
-        } catch (error) {
-            console.error("Error fetching orders: ", error);
-            throw error;
-        }
+        });
     },
 
     getAll() {
         return this._orders;
     },
 
-    async updateStatus(id, newStatus) {
+    async update(id, updates) {
         try {
             const orderRef = doc(db, COLLECTION_NAME, id);
-            await updateDoc(orderRef, { status: newStatus });
-
-            // Update local state
-            const index = this._orders.findIndex(o => o.id === id);
-            if (index !== -1) {
-                this._orders[index].status = newStatus;
-            }
+            await updateDoc(orderRef, updates);
+            // Listener will update local state automatically
         } catch (error) {
-            console.error("Error updating order status: ", error);
+            console.error("Error updating order: ", error);
             throw error;
+        }
+    },
+
+    stopListening() {
+        if (this._unsubscribe) {
+            this._unsubscribe();
+            this._unsubscribe = null;
+            this._initialized = false;
         }
     }
 };
