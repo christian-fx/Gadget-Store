@@ -8,6 +8,18 @@ export const AdminOrderStore = {
     _orders: [],
     _unsubscribe: null,
     _initialized: false,
+    _listeners: [],
+
+    subscribe(callback) {
+        this._listeners.push(callback);
+        return () => {
+            this._listeners = this._listeners.filter(cb => cb !== callback);
+        };
+    },
+
+    _notifyListeners() {
+        this._listeners.forEach(cb => cb(this._orders));
+    },
 
     async init() {
         if (this._initialized) return;
@@ -39,6 +51,7 @@ export const AdminOrderStore = {
 
                 this._orders = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 this._initialized = true;
+                this._notifyListeners();
                 resolve(this._orders);
             }, (error) => {
                 console.error("Error listening to orders: ", error);

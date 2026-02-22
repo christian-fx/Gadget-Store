@@ -16,7 +16,7 @@ export function renderOrders() {
         <div class="flex h-screen w-full overflow-hidden bg-slate-100">
             ${Sidebar('orders')}
             <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-                ${Topbar('Orders', 'Track and manage customer orders')}
+                ${Topbar('Orders', "Track and manage customer orders")}
                 <main class="flex-1 overflow-y-auto p-4 md:p-8">
                      <div class="max-w-7xl mx-auto flex flex-col gap-6">
                         <!-- Filters -->
@@ -96,11 +96,11 @@ export function renderOrders() {
                         <div class="bg-slate-50 p-4 rounded-xl border border-border-color space-y-3">
                              <div class="flex justify-between text-sm">
                                 <span class="text-text-muted">Order Date</span>
-                                <span class="font-medium text-text-main" id="modalDate"></span>
+                                <span class="font-medium text-text-main" id="modalSummaryDate"></span>
                             </div>
                              <div class="flex justify-between text-sm">
                                 <span class="text-text-muted">Payment Method</span>
-                                <span class="font-medium text-text-main" id="modalPayment"></span>
+                                <span class="font-medium text-text-main" id="modalSummaryPayment"></span>
                             </div>
                              <div class="flex justify-between text-sm">
                                 <span class="text-text-muted">Subtotal</span>
@@ -203,7 +203,7 @@ function setupFilters() {
 
 function setupEventListeners() {
     const viewModal = document.getElementById('viewOrderModal');
-    const closeModalBtn = document.getElementById('closeOrderModal');
+    const closeModalBtn = document.getElementById('closeModal'); // Changed from closeModalBtn to closeModal
     const tableBody = document.getElementById('orders-table-body');
     const saveStatusBtn = document.getElementById('saveOrderStatusBtn');
     let currentOrderId = null;
@@ -266,13 +266,43 @@ function setupEventListeners() {
 
 function populateModal(order) {
     document.getElementById('modalOrderId').textContent = `#${order.id.substring(0, 8).toUpperCase()}`;
-    document.getElementById('modalDate').textContent = new Date(order.createdAt?.seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    document.getElementById('modalPayment').textContent = order.paymentMethod || 'Credit Card';
+
+    // Safely Parse Date
+    let dateObj = new Date();
+    if (order.createdAt) {
+        if (order.createdAt.seconds) {
+            dateObj = new Date(order.createdAt.seconds * 1000);
+        } else {
+            dateObj = new Date(order.createdAt);
+        }
+    }
+
+    const formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('modalDate').textContent = formattedDate;
+    if (document.getElementById('modalSummaryDate')) document.getElementById('modalSummaryDate').textContent = formattedDate;
+
+    const paymentStr = order.paymentMethodId || order.paymentMethod || 'Credit Card';
+    document.getElementById('modalPayment').textContent = paymentStr;
+    if (document.getElementById('modalSummaryPayment')) document.getElementById('modalSummaryPayment').textContent = paymentStr;
+
     document.getElementById('modalCustomerName').textContent = order.customerName || 'Guest';
     document.getElementById('modalCustomerEmail').textContent = order.customerEmail || 'N/A';
-    document.getElementById('modalShippingAddress').textContent = order.shippingAddress || 'N/A';
-    document.getElementById('modalTotal').textContent = formatCurrency(order.total);
-    document.getElementById('modalSubtotal').textContent = formatCurrency(order.total); // Assuming no tax/shipping for now logic
+
+    let shippingStr = 'N/A';
+    if (order.shippingAddress) {
+        if (typeof order.shippingAddress === 'object') {
+            const addr = order.shippingAddress;
+            shippingStr = `${addr.street || ''}, ${addr.city || ''}, ${addr.state || ''} ${addr.zip || ''}, ${addr.country || ''}`.replace(/(^[,\s]+)|([,\s]+$)/g, '');
+        } else {
+            shippingStr = order.shippingAddress;
+        }
+    }
+    document.getElementById('modalShippingAddress').textContent = shippingStr;
+
+    const orderTotal = order.totalAmount !== undefined ? order.totalAmount : (order.total || 0);
+    document.getElementById('modalTotal').textContent = formatCurrency(orderTotal);
+    // Subtotal logic (can be updated later if tax/shipping is added)
+    document.getElementById('modalSubtotal').textContent = formatCurrency(orderTotal);
 
     // Set current status in select
     const statusSelect = document.getElementById('modalStatusSelect');
@@ -284,24 +314,30 @@ function populateModal(order) {
 
         if (order.items && order.items.length > 0) {
             order.items.forEach(item => {
-                const product = AdminProductStore.getAll().find(p => p.id === item.productId);
+                // Try finding product in store for latest image, fallback to item.imageUrl
+                const product = AdminProductStore.getAll().find(p => p.id === (item.productId || item.id));
+                const imgStr = (product && (product.imageUrl || product.image)) ? (product.imageUrl || product.image) : (item.imageUrl || item.image || '');
+                const imgHtml = imgStr ? `<img src="${imgStr}" class="w-full h-full object-cover" />` : '<span class="material-symbols-outlined text-slate-400">image</span>';
+
+                const itemQty = item.quantity || item.qty || 1;
+
                 itemsList.innerHTML += `
                     <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
                         <div class="flex items-center gap-4">
                             <div class="h-12 w-12 rounded-md bg-white border border-slate-200 flex items-center justify-center overflow-hidden">
-                                 ${product && product.image ? `<img src="${product.image}" class="w-full h-full object-cover" />` : '<span class="material-symbols-outlined text-slate-400">image</span>'}
+                                 ${imgHtml}
                             </div>
                             <div>
-                                <p class="font-semibold text-text-main text-sm">${item.name}</p>
-                                <p class="text-xs text-text-muted">Qty: ${item.quantity}</p>
+                                <p class="font-semibold text-text-main text-sm">${item.name || 'Unknown Item'}</p>
+                                <p class="text-xs text-text-muted">Qty: ${itemQty}</p>
                             </div>
                         </div>
-                        <p class="font-semibold text-text-main text-sm">${formatCurrency(item.price * item.quantity)}</p>
+                        <p class="font-semibold text-text-main text-sm">${formatCurrency(item.price * itemQty)}</p>
                     </div>
                 `;
             });
         } else {
-            itemsList.innerHTML = '<p class="text-center text-text-muted py-4">No items in this order.</p>';
+            itemsList.innerHTML = '<p class="text-sm text-text-muted py-2">No items found.</p>';
         }
     }
 }
@@ -327,7 +363,7 @@ function renderTable(orders) {
                 <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm text-text-muted">
                     <span class="px-3 py-1 bg-slate-100 rounded-full text-xs font-semibold text-slate-600 border border-slate-200">${itemCount} Items</span>
                 </td>
-                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-semibold text-text-main">${formatCurrency(order.total)}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-sm font-semibold text-text-main">${formatCurrency(order.totalAmount !== undefined ? order.totalAmount : (order.total || 0))}</td>
                 <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ${getStatusColor(order.status)}">
                         ${order.status}
