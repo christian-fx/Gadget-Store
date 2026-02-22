@@ -80,6 +80,48 @@ function updateDashboardContent() {
     const totalProducts = products.length;
     const lowStockCount = products.filter(p => p.stock < 10).length;
 
+    // Calculate Month-over-Month Growth
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const previousMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+    const getMonthFilter = (items, m, y) => items.filter(item => {
+        if (!item.createdAt) return false;
+        const d = item.createdAt.seconds ? new Date(item.createdAt.seconds * 1000) : new Date(item.createdAt);
+        return d.getMonth() === m && d.getFullYear() === y;
+    });
+
+    const currOrders = getMonthFilter(orders, currentMonth, currentYear);
+    const prevOrders = getMonthFilter(orders, previousMonth, previousMonthYear);
+
+    const currRev = currOrders.reduce((sum, order) => sum + (parseFloat(order.totalAmount !== undefined ? order.totalAmount : (order.total || 0)) || 0), 0);
+    const prevRev = prevOrders.reduce((sum, order) => sum + (parseFloat(order.totalAmount !== undefined ? order.totalAmount : (order.total || 0)) || 0), 0);
+
+    const currUsers = getMonthFilter(users, currentMonth, currentYear);
+    const prevUsers = getMonthFilter(users, previousMonth, previousMonthYear);
+
+    const calcGrowth = (curr, prev) => {
+        if (prev === 0) return curr > 0 ? 100 : 0;
+        return Math.round(((curr - prev) / prev) * 100);
+    };
+
+    const revGrowth = calcGrowth(currRev, prevRev);
+    const orderGrowth = calcGrowth(currOrders.length, prevOrders.length);
+    const userGrowth = calcGrowth(currUsers.length, prevUsers.length);
+
+    const getGrowthHTML = (growth) => {
+        if (growth > 0) return `<span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> +${growth}% vs last month`;
+        if (growth < 0) return `<span class="material-symbols-outlined text-[16px] mr-1">trending_down</span> ${growth}% vs last month`;
+        return `<span class="material-symbols-outlined text-[16px] mr-1 text-slate-400">trending_flat</span> No change vs last month`;
+    };
+    const getGrowthClass = (growth) => {
+        if (growth > 0) return 'text-emerald-600';
+        if (growth < 0) return 'text-rose-600';
+        return 'text-slate-500';
+    };
+
     // Calculate Top Categories (Revenue based)
     const categoryRevenue = {};
     orders.forEach(order => {
@@ -106,7 +148,6 @@ function updateDashboardContent() {
     // Calculate Revenue Over Time (Last 6 Months)
     const months = [];
     const revenueData = [];
-    const today = new Date();
     for (let i = 5; i >= 0; i--) {
         const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
         const monthName = d.toLocaleString('default', { month: 'short' });
@@ -137,8 +178,8 @@ function updateDashboardContent() {
                     <div>
                         <p class="text-slate-500 font-medium text-sm">Total Revenue</p>
                         <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${formatCurrency(totalRevenue)}</h3>
-                        <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">trending_up</span> Real Data
+                        <p class="${getGrowthClass(revGrowth)} text-sm font-medium mt-1 inline-flex items-center">
+                            ${getGrowthHTML(revGrowth)}
                         </p>
                     </div>
                     <div class="bg-emerald-50 p-2 md:p-3 rounded-xl text-emerald-600">
@@ -151,8 +192,8 @@ function updateDashboardContent() {
                     <div>
                         <p class="text-slate-500 font-medium text-sm">Total Orders</p>
                         <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${totalOrders.toLocaleString()}</h3>
-                        <p class="text-emerald-600 text-sm font-medium mt-1 inline-flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">shopping_cart</span> Real Data
+                        <p class="${getGrowthClass(orderGrowth)} text-sm font-medium mt-1 inline-flex items-center">
+                             ${getGrowthHTML(orderGrowth)}
                         </p>
                     </div>
                     <div class="bg-blue-50 p-2 md:p-3 rounded-xl text-blue-600">
@@ -165,8 +206,8 @@ function updateDashboardContent() {
                     <div>
                         <p class="text-slate-500 font-medium text-sm">Total Customers</p>
                         <h3 class="text-2xl md:text-3xl font-semibold text-slate-900 mt-2">${totalCustomers.toLocaleString()}</h3>
-                         <p class="text-blue-600 text-sm font-medium mt-1 inline-flex items-center">
-                            <span class="material-symbols-outlined text-[16px] mr-1">person</span> Active
+                         <p class="${getGrowthClass(userGrowth)} text-sm font-medium mt-1 inline-flex items-center">
+                            ${getGrowthHTML(userGrowth)}
                         </p>
                     </div>
                     <div class="bg-purple-50 p-2 md:p-3 rounded-xl text-purple-600">

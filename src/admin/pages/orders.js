@@ -30,6 +30,12 @@ export function renderOrders() {
                                 <option value="delivered">Delivered</option>
                                 <option value="cancelled">Cancelled</option>
                             </select>
+                            <select id="sortFilter" class="border-2 border-border-color rounded-lg px-3 py-2 text-sm bg-white text-text-main focus:border-primary focus:outline-none w-full md:w-48">
+                                <option value="newest">Sort by: Newest</option>
+                                <option value="oldest">Sort by: Oldest</option>
+                                <option value="highest">Total: High to Low</option>
+                                <option value="lowest">Total: Low to High</option>
+                            </select>
                         </div>
 
                         <!-- Table -->
@@ -183,22 +189,53 @@ async function initOrdersLogic() {
 function setupFilters() {
     const searchInput = document.getElementById('orderSearch');
     const statusFilter = document.getElementById('statusFilter');
+    const sortFilter = document.getElementById('sortFilter');
 
     const filterOrders = () => {
-        const query = searchInput.value.toLowerCase();
-        const status = statusFilter.value;
-        const allOrders = AdminOrderStore.getAll();
+        const query = searchInput ? searchInput.value.toLowerCase() : '';
+        const status = statusFilter ? statusFilter.value : '';
+        const sortMode = sortFilter ? sortFilter.value : 'newest';
 
+        let allOrders = [...AdminOrderStore.getAll()];
+
+        // 1. Filter
         currentOrders = allOrders.filter(o => {
             const matchesSearch = o.id.toLowerCase().includes(query) || (o.customerName && o.customerName.toLowerCase().includes(query));
             const matchesStatus = status === '' || o.status === status;
             return matchesSearch && matchesStatus;
         });
+
+        // 2. Sort
+        currentOrders.sort((a, b) => {
+            // Helper for parsing Timestamp or Date strings
+            const getTime = (order) => {
+                if (!order.createdAt) return 0;
+                if (order.createdAt.seconds) return order.createdAt.seconds * 1000;
+                return new Date(order.createdAt).getTime();
+            };
+
+            // Helper for Total
+            const getTotal = (order) => parseFloat(order.totalAmount !== undefined ? order.totalAmount : (order.total || 0));
+
+            switch (sortMode) {
+                case 'oldest':
+                    return getTime(a) - getTime(b);
+                case 'highest':
+                    return getTotal(b) - getTotal(a);
+                case 'lowest':
+                    return getTotal(a) - getTotal(b);
+                case 'newest':
+                default:
+                    return getTime(b) - getTime(a);
+            }
+        });
+
         renderTable(currentOrders);
     };
 
     if (searchInput) searchInput.addEventListener('input', filterOrders);
     if (statusFilter) statusFilter.addEventListener('change', filterOrders);
+    if (sortFilter) sortFilter.addEventListener('change', filterOrders);
 }
 
 function setupEventListeners() {
