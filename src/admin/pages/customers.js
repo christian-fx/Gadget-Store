@@ -55,13 +55,10 @@ export function renderCustomers() {
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="flex flex-col items-center bg-slate-50 p-6 rounded-xl border border-border-color">
-                        <div class="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-2xl mb-4" id="modalCustomerInitials">
-                            --
-                        </div>
-                        <h4 class="text-lg font-bold text-text-main" id="modalCustomerName">Customer Name</h4>
-                        <p class="text-text-muted text-sm" id="modalCustomerEmail">email@example.com</p>
-                        <span class="mt-2 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase">Active</span>
+                    <div class="flex flex-col items-center bg-slate-50 p-6 rounded-xl border border-border-color justify-center">
+                        <h4 class="text-2xl font-bold text-text-main text-center" id="modalCustomerName">Customer Name</h4>
+                        <p class="text-text-muted text-base mt-2" id="modalCustomerEmail">email@example.com</p>
+                        <span class="mt-4 px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full uppercase">Active</span>
                     </div>
                     
                     <div class="space-y-4">
@@ -148,7 +145,7 @@ function setupEventListeners() {
         tableBody.addEventListener('click', (e) => {
             const btn = e.target.closest('.view-customer-btn');
             if (btn) {
-                const id = parseInt(btn.dataset.id);
+                const id = btn.dataset.id; // Firebase IDs are strings
                 const user = AdminUserStore.getAll().find(u => u.id === id);
 
                 if (user) {
@@ -157,14 +154,20 @@ function setupEventListeners() {
                     const orders = document.getElementById('modalCustomerOrders');
                     const spent = document.getElementById('modalCustomerSpent');
                     const joinDate = document.getElementById('modalCustomerJoinDate');
-                    const initials = document.getElementById('modalCustomerInitials');
 
-                    if (name) name.textContent = user.name;
-                    if (email) email.textContent = user.email;
-                    if (orders) orders.textContent = user.orders;
-                    if (spent) spent.textContent = `$${user.totalSpent.toLocaleString()}`;
-                    if (joinDate) joinDate.textContent = user.joinDate;
-                    if (initials) initials.textContent = user.initials;
+                    if (name) name.textContent = user.name || 'Unknown User';
+                    if (email) email.textContent = user.email || 'N/A';
+                    if (orders) orders.textContent = user.orders || 0;
+                    if (spent) spent.textContent = `$${(user.totalSpent || 0).toLocaleString()}`;
+                    if (joinDate) {
+                        if (user.createdAt) {
+                            let d = new Date(user.createdAt);
+                            if (user.createdAt.seconds) d = new Date(user.createdAt.seconds * 1000);
+                            joinDate.textContent = d.toLocaleDateString();
+                        } else {
+                            joinDate.textContent = user.joinDate || 'N/A';
+                        }
+                    }
 
                     modal.classList.remove('hidden');
                     modal.classList.add('flex');
@@ -183,26 +186,32 @@ function renderTable(users) {
             return;
         }
 
-        container.innerHTML = users.map(user => `
+        container.innerHTML = users.map(user => {
+            let joinDate = 'N/A';
+            if (user.createdAt) {
+                let d = new Date(user.createdAt);
+                if (user.createdAt.seconds) d = new Date(user.createdAt.seconds * 1000);
+                joinDate = d.toLocaleDateString();
+            } else if (user.joinDate) {
+                joinDate = user.joinDate;
+            }
+
+            return `
             <tr class="hover:bg-slate-50 transition-colors group">
                 <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap">
-                    <div class="flex items-center gap-3">
-                        <div class="h-10 w-10 rounded-full bg-slate-100 border border-border-color flex items-center justify-center text-primary font-bold text-sm">
-                            ${user.initials}
-                        </div>
-                        <div class="font-bold text-text-main text-sm">${user.name}</div>
-                    </div>
+                    <div class="font-bold text-text-main text-sm">${user.name || 'Unknown User'}</div>
                 </td>
-                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted">${user.email}</td>
-                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-medium">${user.orders}</td>
-                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-bold">$${user.totalSpent.toLocaleString()}</td>
-                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted text-sm">${user.joinDate}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted">${user.email || 'N/A'}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-medium">${user.orders || 0}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-main font-bold">$${(user.totalSpent || 0).toLocaleString()}</td>
+                <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-text-muted text-sm">${joinDate}</td>
                 <td class="px-4 py-3 md:px-6 md:py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button class="view-customer-btn text-primary hover:text-primary-dark font-semibold bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg transition-colors border border-transparent hover:border-blue-200" data-id="${user.id}">
                         View
                     </button>
                 </td>
             </tr>
-        `).join('');
+        `;
+        }).join('');
     }
 }
