@@ -21,8 +21,8 @@ export function Topbar(title, subtitle) {
                             <span id="notificationBadge"
                                 class="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
                         </button>
-                        <!-- Notifications Dropdown would go here or be appended separately -->
-                        <div id="notificationsDropdown" class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-100 hidden z-50">
+                        <!-- Notifications Dropdown -->
+                        <div id="notificationsDropdown" class="fixed inset-x-4 top-20 md:absolute md:inset-auto md:right-0 md:top-full md:mt-2 w-auto md:w-80 bg-white rounded-xl shadow-xl border border-slate-100 hidden z-50">
                              <div class="p-4 border-b border-slate-100 flex items-center justify-between">
                                 <h3 class="font-semibold text-slate-900">Notifications</h3>
                                 <span class="text-xs text-primary font-medium cursor-pointer">Mark all read</span>
