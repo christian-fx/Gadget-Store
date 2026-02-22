@@ -245,10 +245,8 @@ function setupEventListeners() {
             saveStatusBtn.textContent = 'Updating...';
 
             try {
-                // Mock update - in real app would update store
-                // await AdminOrderStore.update(currentOrderId, { status: newStatus });
-                const order = AdminOrderStore.getAll().find(o => o.id === currentOrderId);
-                if (order) order.status = newStatus; // Local update for demo
+                // Actual store update
+                await AdminOrderStore.update(currentOrderId, { status: newStatus });
 
                 Toast.show(`Order status updated to ${newStatus}`);
                 hideModal();
